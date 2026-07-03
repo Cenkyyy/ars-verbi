@@ -18,6 +18,8 @@ MonoBehaviour:
   <Material>k__BackingField: {fileID: 2100000, guid: b5e056f0a19143d47bb4cf323f987009, type: 2}
   <StatusDuration>k__BackingField: -1
   <DamageOverTimePerSecond>k__BackingField: 5
+  <FrostMoveSpeedMultiplier>k__BackingField: -1
+  <DarkIncomingDamageMultiplier>k__BackingField: -1
   <LightningBonusMultiplier>k__BackingField: -1
   <PoisonCloudDuration>k__BackingField: 4
   <PoisonCloudPrefab>k__BackingField: {fileID: 6381046162596957270, guid: 78a4b63cb7084d1aa19f6019e4e57d51, type: 3}

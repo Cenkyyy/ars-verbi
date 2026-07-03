@@ -60,6 +60,8 @@ public class EnemyCore : EntityCore
 
     protected virtual void FixedUpdate()
     {
+        RefreshMovementStatusMultiplier();
+
         if (IsStunned())
         {
             StopMovement();
@@ -267,6 +269,15 @@ public class EnemyCore : EntityCore
             ResolveStatusEffectTarget();
 
         return _statusEffectTarget != null && _statusEffectTarget.HasStatus(CombatStatusEffectType.Stunned);
+    }
+
+    private void RefreshMovementStatusMultiplier()
+    {
+        if (_statusEffectTarget == null)
+            ResolveStatusEffectTarget();
+
+        float multiplier = _statusEffectTarget?.GetStatusMultiplier(CombatStatusEffectType.Slow) ?? 1f;
+        Movement.SetMoveSpeedMultiplier(multiplier);
     }
 
     private void ResolveStatusEffectTarget()

@@ -167,9 +167,9 @@ public sealed class PlayerSpellCombatController : MonoBehaviour
         }
     }
 
-    public bool TryApplyProjectileHit(SpellCastRuntimeData runtimeData, Collider2D collider, ISet<ICombatTarget> alreadyHitTargets)
+    public bool TryApplyProjectileHit(SpellCastRuntimeData runtimeData, SpellImpactBudget impactBudget, Collider2D collider, ISet<ICombatTarget> alreadyHitTargets)
     {
-        if (runtimeData == null || collider == null || !IsInLayerMask(collider.gameObject.layer, _targetMask))
+        if (runtimeData == null || impactBudget == null || collider == null || !IsInLayerMask(collider.gameObject.layer, _targetMask))
             return false;
 
         if (!SpellCombatTargetUtility.TryGetCombatTarget(collider, out ICombatTarget target))
@@ -178,25 +178,32 @@ public sealed class PlayerSpellCombatController : MonoBehaviour
         if (alreadyHitTargets != null && alreadyHitTargets.Contains(target))
             return false;
 
-        ApplyHit(runtimeData, target, target.Position);
+        ApplyHit(runtimeData, impactBudget, target, target.Position);
         alreadyHitTargets?.Add(target);
         return true;
     }
 
-    private void ApplyHit(SpellCastRuntimeData runtimeData, ICombatTarget target, Vector2 hitPosition)
+    private void ApplyHit(SpellCastRuntimeData runtimeData, SpellImpactBudget impactBudget, ICombatTarget target, Vector2 hitPosition)
     {
         float effectivenessMultiplier = ResolveWordEffectivenessMultiplier(runtimeData, target);
         float damage = runtimeData.BaseDamage * effectivenessMultiplier;
         IStatusEffectTarget statusTarget = SpellCombatTargetUtility.GetStatusEffectTarget(target);
 
-        if (runtimeData.Element.Type == ElementWordType.Lightning && statusTarget != null && statusTarget.HasAnyNegativeStatus)
-            damage *= runtimeData.Element.LightningBonusMultiplier;
+        damage = ApplyElementDamageBonus(runtimeData, statusTarget, damage);
 
         if (SpellCombatTargetUtility.TryApplyDamage(target, damage, _player, out int displayedDamage))
             DamagePopupFeedbackUtility.ShowForTarget(target, displayedDamage, effectivenessMultiplier, _damagePopupFeedbackSettings);
 
-        ApplyElementStatus(runtimeData, target, statusTarget, hitPosition, effectivenessMultiplier);
-        ApplyModifierSideEffects(runtimeData, target, statusTarget, hitPosition);
+        ApplyElementStatus(runtimeData, impactBudget, target, statusTarget, hitPosition, effectivenessMultiplier);
+        ApplyModifierSideEffects(runtimeData, impactBudget, target, statusTarget, hitPosition);
+    }
+
+    private static float ApplyElementDamageBonus(SpellCastRuntimeData runtimeData, IStatusEffectTarget statusTarget, float damage)
+    {
+        if (runtimeData.Element.Type != ElementWordType.Lightning || statusTarget == null || !statusTarget.HasAnyNegativeStatus)
+            return damage;
+
+        return damage * runtimeData.Element.LightningBonusMultiplier;
     }
 
     private float ResolveWordEffectivenessMultiplier(SpellCastRuntimeData runtimeData, ICombatTarget target)
@@ -217,28 +224,34 @@ public sealed class PlayerSpellCombatController : MonoBehaviour
         return _wordEffectivenessData.CalculateFinalMultiplier(biome, roleTags, runtimeData.Modifier, runtimeData.Element, runtimeData.Form);
     }
 
-    private void ApplyElementStatus(SpellCastRuntimeData runtimeData, ICombatTarget target, IStatusEffectTarget statusTarget, Vector2 hitPosition, float effectivenessMultiplier)
+    private void ApplyElementStatus(SpellCastRuntimeData runtimeData, SpellImpactBudget impactBudget, ICombatTarget target, IStatusEffectTarget statusTarget, Vector2 hitPosition, float effectivenessMultiplier)
     {
         switch (runtimeData.Element.Type)
         {
             case ElementWordType.Poison:
-                if (runtimeData.TryConsumePoisonCloud(target))
+                if (impactBudget.TryConsumePoisonCloud(target))
                     SpawnPoisonCloud(runtimeData.Element, hitPosition);
                 break;
             case ElementWordType.Frost:
-                statusTarget?.ApplyStatus(CombatStatusEffectType.Slow, runtimeData.Element.StatusDuration);
+                statusTarget?.ApplyStatus(
+                    CombatStatusEffectType.Slow,
+                    runtimeData.Element.StatusDuration,
+                    runtimeData.Element.FrostMoveSpeedMultiplier);
                 break;
             case ElementWordType.Ember:
                 statusTarget?.ApplyStatus(CombatStatusEffectType.Burn, runtimeData.Element.StatusDuration);
                 StartCoroutine(ApplyBurnDamageTicks(target, runtimeData.Element.DamageOverTimePerSecond * effectivenessMultiplier, runtimeData.Element.StatusDuration, effectivenessMultiplier, _player));
                 break;
             case ElementWordType.Dark:
-                statusTarget?.ApplyStatus(CombatStatusEffectType.Weakened, runtimeData.Element.StatusDuration);
+                statusTarget?.ApplyStatus(
+                    CombatStatusEffectType.Weakened,
+                    runtimeData.Element.StatusDuration,
+                    runtimeData.Element.DarkIncomingDamageMultiplier);
                 break;
         }
     }
 
-    private void ApplyModifierSideEffects(SpellCastRuntimeData runtimeData, ICombatTarget directHitTarget, IStatusEffectTarget statusTarget, Vector2 hitPosition)
+    private void ApplyModifierSideEffects(SpellCastRuntimeData runtimeData, SpellImpactBudget impactBudget, ICombatTarget directHitTarget, IStatusEffectTarget statusTarget, Vector2 hitPosition)
     {
         switch (runtimeData.Modifier.Type)
         {
@@ -247,10 +260,10 @@ public sealed class PlayerSpellCombatController : MonoBehaviour
                 break;
 
             case ModifierWordType.Exploding:
-                if (!runtimeData.TryConsumeExplosion())
+                if (!impactBudget.TryConsumeExplosion())
                     return;
 
-                ApplyExplosion(runtimeData, hitPosition, directHitTarget);
+                ApplyExplosion(runtimeData, impactBudget, hitPosition, directHitTarget);
                 break;
 
             case ModifierWordType.Reclaiming:
@@ -262,15 +275,15 @@ public sealed class PlayerSpellCombatController : MonoBehaviour
         }
     }
 
-    private void ApplyExplosion(SpellCastRuntimeData runtimeData, Vector2 center, ICombatTarget directHitTarget)
+    private void ApplyExplosion(SpellCastRuntimeData runtimeData, SpellImpactBudget impactBudget, Vector2 center, ICombatTarget directHitTarget)
     {
         if (runtimeData.Modifier.ExplosionPrefab == null)
             return;
 
-        StartCoroutine(RunExplosion(runtimeData, center, directHitTarget));
+        StartCoroutine(RunExplosion(runtimeData, impactBudget, center, directHitTarget));
     }
 
-    private IEnumerator RunExplosion(SpellCastRuntimeData runtimeData, Vector2 center, ICombatTarget directHitTarget)
+    private IEnumerator RunExplosion(SpellCastRuntimeData runtimeData, SpellImpactBudget impactBudget, Vector2 center, ICombatTarget directHitTarget)
     {
         GameObject explosion = Instantiate(runtimeData.Modifier.ExplosionPrefab, center, Quaternion.identity, _spellContainer);
         ApplyExplosionVisuals(explosion, runtimeData.Element);
@@ -296,7 +309,7 @@ public sealed class PlayerSpellCombatController : MonoBehaviour
 
             for (var i = 0; i < overlappingTargets.Count; i++)
             {
-                ApplyExplosionHit(runtimeData, overlappingTargets[i], directHitTarget, damagedTargets);
+                ApplyExplosionHit(runtimeData, impactBudget, overlappingTargets[i], directHitTarget, damagedTargets);
             }
 
             elapsed += Time.deltaTime;
@@ -319,6 +332,7 @@ public sealed class PlayerSpellCombatController : MonoBehaviour
 
     private void ApplyExplosionHit(
         SpellCastRuntimeData runtimeData,
+        SpellImpactBudget impactBudget,
         Collider2D collider,
         ICombatTarget directHitTarget,
         ISet<ICombatTarget> damagedTargets)
@@ -330,10 +344,14 @@ public sealed class PlayerSpellCombatController : MonoBehaviour
             return;
 
         float effectivenessMultiplier = ResolveWordEffectivenessMultiplier(runtimeData, target);
+        IStatusEffectTarget statusTarget = SpellCombatTargetUtility.GetStatusEffectTarget(target);
         float damage = runtimeData.BaseDamage * runtimeData.Modifier.ExplosionDamageMultiplier * effectivenessMultiplier;
+        damage = ApplyElementDamageBonus(runtimeData, statusTarget, damage);
+
         if (SpellCombatTargetUtility.TryApplyDamage(target, damage, _player, out int displayedDamage))
             DamagePopupFeedbackUtility.ShowForTarget(target, displayedDamage, effectivenessMultiplier, _damagePopupFeedbackSettings);
 
+        ApplyElementStatus(runtimeData, impactBudget, target, statusTarget, target.Position, effectivenessMultiplier);
         damagedTargets.Add(target);
     }
 
@@ -434,6 +452,7 @@ public sealed class PlayerSpellCombatController : MonoBehaviour
                 projectile = spellObject.AddComponent<SpellProjectile>();
 
             float travelDistance = travelDistances != null && i < travelDistances.Count ? travelDistances[i] : spell.Form.Range;
+            SpellImpactBudget impactBudget = runtimeData.CreateImpactBudget();
             projectile.Initialize(
                 spell.Directions[i],
                 ResolveProjectileSpeed(spell.Form),
@@ -442,6 +461,7 @@ public sealed class PlayerSpellCombatController : MonoBehaviour
                 spell.Element.Material,
                 this,
                 runtimeData,
+                impactBudget,
                 ResolveHitMode(spell));
         }
     }
@@ -457,6 +477,7 @@ public sealed class PlayerSpellCombatController : MonoBehaviour
         _castLockedUntil = Mathf.Max(_castLockedUntil, Time.time + spell.Form.BeamDuration);
 
         Vector2 baseDirection = spell.Directions[0];
+        SpellImpactBudget sharedBeamImpactBudget = runtimeData.CreateImpactBudget();
         for (int i = 0; i < spell.Directions.Count; i++)
         {
             GameObject spellObject = Instantiate(spell.Form.ProjectilePrefab, spell.Origin, Quaternion.identity, _spellContainer);
@@ -474,7 +495,8 @@ public sealed class PlayerSpellCombatController : MonoBehaviour
                 _spellObstructionMask,
                 spell.Element.Material,
                 this,
-                runtimeData);
+                runtimeData,
+                sharedBeamImpactBudget);
         }
     }
 

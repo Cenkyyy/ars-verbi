@@ -16,9 +16,6 @@ public sealed class FormWordData : WordData
     [field: SerializeField, Min(0.1f)] public float Range { get; private set; }
     [field: SerializeField, Min(0.1f)] public float HitRadius { get; private set; }
 
-    [Header("Wave")]
-    [field: SerializeField, Min(-1f)] public float WaveArcAngle { get; private set; }
-
     [Header("Beam")]
     [field: SerializeField, Min(-1f)] public float BeamDuration { get; private set; }
     [field: SerializeField, Min(-1f)] public float BeamTickInterval { get; private set; }
@@ -49,7 +46,6 @@ public sealed class FormWordData : WordData
         Range = Mathf.Max(0.1f, Range);
         HitRadius = Mathf.Max(0.1f, HitRadius);
 
-        WaveArcAngle = Type == FormWordType.Wave ? Mathf.Max(0f, WaveArcAngle) : -1f;
         BeamDuration = Type == FormWordType.Beam ? Mathf.Max(0f, BeamDuration) : -1f;
         BeamTickInterval = Type == FormWordType.Beam ? Mathf.Max(0f, BeamTickInterval) : -1f;
         BarrageProjectileCount = Type == FormWordType.Barrage ? Mathf.Max(0, BarrageProjectileCount) : -1;

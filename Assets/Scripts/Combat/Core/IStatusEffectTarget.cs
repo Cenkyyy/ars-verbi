@@ -5,5 +5,6 @@ public interface IStatusEffectTarget
 {
     bool HasAnyNegativeStatus { get; }
     bool HasStatus(CombatStatusEffectType effect);
-    void ApplyStatus(CombatStatusEffectType effect, float durationSeconds);
+    float GetStatusMultiplier(CombatStatusEffectType effect);
+    void ApplyStatus(CombatStatusEffectType effect, float durationSeconds, float multiplier = 1f);
 }

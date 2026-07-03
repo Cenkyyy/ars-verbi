@@ -43,6 +43,7 @@ public sealed class SpellBeam : MonoBehaviour
     private ContactFilter2D _targetFilter;
     private PlayerSpellCombatController _spellCombatController;
     private SpellCastRuntimeData _runtimeData;
+    private SpellImpactBudget _impactBudget;
 
     public void Initialize(
         PlayerHeldItemVisualController originProvider,
@@ -52,7 +53,8 @@ public sealed class SpellBeam : MonoBehaviour
         LayerMask obstructionMask,
         Material elementMaterial,
         PlayerSpellCombatController spellCombatController,
-        SpellCastRuntimeData runtimeData)
+        SpellCastRuntimeData runtimeData,
+        SpellImpactBudget impactBudget)
     {
         _originProvider = originProvider;
         _fallbackOrigin = fallbackOrigin;
@@ -62,6 +64,7 @@ public sealed class SpellBeam : MonoBehaviour
         _elementMaterial = elementMaterial;
         _spellCombatController = spellCombatController;
         _runtimeData = runtimeData;
+        _impactBudget = impactBudget;
         _elapsed = 0f;
         _tickAccumulator = 0f;
         _currentLength = _tileLength;
@@ -267,7 +270,7 @@ public sealed class SpellBeam : MonoBehaviour
 
         for (int i = 0; i < _targetBuffer.Count; i++)
         {
-            _spellCombatController.TryApplyProjectileHit(_runtimeData, _targetBuffer[i], _tickTargets);
+            _spellCombatController.TryApplyProjectileHit(_runtimeData, _impactBudget, _targetBuffer[i], _tickTargets);
         }
     }
 
@@ -281,7 +284,7 @@ public sealed class SpellBeam : MonoBehaviour
 
         for (int i = 0; i < _targetBuffer.Count; i++)
         {
-            _spellCombatController.TryApplyProjectileHit(_runtimeData, _targetBuffer[i], _contactHitTargets);
+            _spellCombatController.TryApplyProjectileHit(_runtimeData, _impactBudget, _targetBuffer[i], _contactHitTargets);
         }
     }
 

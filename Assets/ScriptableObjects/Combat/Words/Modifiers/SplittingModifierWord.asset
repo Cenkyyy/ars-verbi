@@ -24,4 +24,3 @@ MonoBehaviour:
   <MaxReclaimsPerCast>k__BackingField: -1
   <SplitAngleDegrees>k__BackingField: 45
   <SplitDamageMultiplier>k__BackingField: 0.33333334
-  <OptionalPrefab>k__BackingField: {fileID: 0}

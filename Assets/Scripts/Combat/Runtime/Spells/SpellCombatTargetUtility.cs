@@ -35,7 +35,9 @@ public static class SpellCombatTargetUtility
         if (!TryGetDamageable(target, out IDamageable damageable))
             return false;
 
-        int roundedDamage = Mathf.RoundToInt(amount);
+        IStatusEffectTarget statusTarget = GetStatusEffectTarget(target);
+        float incomingDamageMultiplier = statusTarget?.GetStatusMultiplier(CombatStatusEffectType.Weakened) ?? 1f;
+        int roundedDamage = Mathf.RoundToInt(amount * incomingDamageMultiplier);
         if (roundedDamage <= 0)
             roundedDamage = 1;
 

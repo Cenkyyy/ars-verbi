@@ -34,6 +34,7 @@ public sealed class SpellProjectile : MonoBehaviour
     private HitMode _hitMode;
     private PlayerSpellCombatController _spellCombatController;
     private SpellCastRuntimeData _runtimeData;
+    private SpellImpactBudget _impactBudget;
     private ContactFilter2D _beamTargetFilter;
     private float _beamTickInterval;
     private float _beamTickAccumulator;
@@ -82,7 +83,7 @@ public sealed class SpellProjectile : MonoBehaviour
 
         TrackAndPushPiercingWaveTarget(other);
 
-        bool hit = _spellCombatController.TryApplyProjectileHit(_runtimeData, other, _hitTargets);
+        bool hit = _spellCombatController.TryApplyProjectileHit(_runtimeData, _impactBudget, other, _hitTargets);
         if (hit && _hitMode == HitMode.SingleImpact)
         {
             _singleImpactConsumed = true;
@@ -123,7 +124,7 @@ public sealed class SpellProjectile : MonoBehaviour
         if (_singleImpactConsumed)
             return;
 
-        bool hit = _spellCombatController.TryApplyProjectileHit(_runtimeData, other, _hitTargets);
+        bool hit = _spellCombatController.TryApplyProjectileHit(_runtimeData, _impactBudget, other, _hitTargets);
         if (hit && _hitMode == HitMode.SingleImpact)
         {
             _singleImpactConsumed = true;
@@ -139,6 +140,7 @@ public sealed class SpellProjectile : MonoBehaviour
         Material elementMaterial,
         PlayerSpellCombatController spellCombatController,
         SpellCastRuntimeData runtimeData,
+        SpellImpactBudget impactBudget,
         HitMode hitMode)
     {
         _direction = direction.sqrMagnitude > Mathf.Epsilon ? direction.normalized : Vector2.right;
@@ -147,6 +149,7 @@ public sealed class SpellProjectile : MonoBehaviour
         _obstructionMask = obstructionMask;
         _spellCombatController = spellCombatController;
         _runtimeData = runtimeData;
+        _impactBudget = impactBudget;
         _hitMode = hitMode;
         _elapsed = 0f;
         _traveledDistance = 0f;
@@ -264,7 +267,7 @@ public sealed class SpellProjectile : MonoBehaviour
             _hitboxColliders[i].Overlap(_beamTargetFilter, _beamTargetBuffer);
 
             for (var targetIndex = 0; targetIndex < _beamTargetBuffer.Count; targetIndex++)
-                _spellCombatController.TryApplyProjectileHit(_runtimeData, _beamTargetBuffer[targetIndex], _beamTickTargets);
+                _spellCombatController.TryApplyProjectileHit(_runtimeData, _impactBudget, _beamTargetBuffer[targetIndex], _beamTickTargets);
         }
     }
 

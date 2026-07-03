@@ -16,6 +16,12 @@ public sealed class ElementWordData : WordData
     [field: SerializeField, Min(-1f)] public float StatusDuration { get; private set; }
     [field: SerializeField, Min(-1f)] public float DamageOverTimePerSecond { get; private set; }
 
+    [field: Header("Frost")]
+    [field: SerializeField, Min(-1f)] public float FrostMoveSpeedMultiplier { get; private set; } = 0.6f;
+
+    [field: Header("Dark")]
+    [field: SerializeField, Min(-1f)] public float DarkIncomingDamageMultiplier { get; private set; } = 1.25f;
+
     [Header("Lightning")]
     [field: SerializeField, Min(-1f)] public float LightningBonusMultiplier { get; private set; }
 
@@ -32,6 +38,8 @@ public sealed class ElementWordData : WordData
 
         StatusDuration = UsesStatusDuration() ? Mathf.Max(0f, StatusDuration) : -1f;
         DamageOverTimePerSecond = UsesDamageOverTime() ? Mathf.Max(0f, DamageOverTimePerSecond) : -1f;
+        FrostMoveSpeedMultiplier = Type == ElementWordType.Frost ? Mathf.Clamp(FrostMoveSpeedMultiplier, 0.1f, 1f) : -1f;
+        DarkIncomingDamageMultiplier = Type == ElementWordType.Dark ? Mathf.Max(1f, DarkIncomingDamageMultiplier) : -1f;
         LightningBonusMultiplier = Type == ElementWordType.Lightning ? Mathf.Max(0f, LightningBonusMultiplier) : -1f;
         PoisonCloudDuration = Type == ElementWordType.Poison ? Mathf.Max(0f, PoisonCloudDuration) : -1f;
         PoisonCloudPrefab = Type == ElementWordType.Poison ? PoisonCloudPrefab : null;

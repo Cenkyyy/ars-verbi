@@ -10,6 +10,7 @@ public sealed class EntityMovementController : MonoBehaviour
     [SerializeField] private Rigidbody2D _body;
 
     private float _moveSpeed;
+    private float _moveSpeedMultiplier = 1f;
 
     public float ArrivalEpsilon { get; private set; }
 
@@ -21,6 +22,11 @@ public sealed class EntityMovementController : MonoBehaviour
     public void SetArrivalEpsilon(float arrivalEpsilon)
     {
         ArrivalEpsilon = arrivalEpsilon;
+    }
+
+    public void SetMoveSpeedMultiplier(float multiplier)
+    {
+        _moveSpeedMultiplier = Mathf.Max(0f, multiplier);
     }
 
     public bool ArrivedAt(Vector2 worldTarget)
@@ -37,7 +43,7 @@ public sealed class EntityMovementController : MonoBehaviour
             return;
         }
 
-        _body.linearVelocity = offset.normalized * _moveSpeed;
+        _body.linearVelocity = offset.normalized * _moveSpeed * _moveSpeedMultiplier;
     }
 
     public void Stop()

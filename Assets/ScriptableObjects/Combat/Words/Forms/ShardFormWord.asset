@@ -20,7 +20,6 @@ MonoBehaviour:
   <BaseDamage>k__BackingField: 18
   <Range>k__BackingField: 5
   <HitRadius>k__BackingField: 0.5
-  <WaveArcAngle>k__BackingField: -1
   <BeamDuration>k__BackingField: -1
   <BeamTickInterval>k__BackingField: -1
   <BarrageProjectileCount>k__BackingField: -1

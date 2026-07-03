@@ -2,14 +2,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Stores mutable per-cast data shared by spell projectile instances from the same cast.
+/// Stores mutable state shared by every projectile and beam created by one spell cast.
 /// </summary>
 public sealed class SpellCastRuntimeData
 {
-    private int _remainingExplosions = 1;
-    private int _remainingPoisonClouds = 1;
     private int _remainingReclaims;
-    private readonly HashSet<ICombatTarget> _poisonCloudTargets = new();
 
     public ModifierWordData Modifier => Spell.Modifier;
     public ElementWordData Element => Spell.Element;
@@ -24,16 +21,11 @@ public sealed class SpellCastRuntimeData
             ? Mathf.Max(0f, baseDamage) * spell.Modifier.SplitDamageMultiplier
             : Mathf.Max(0f, baseDamage);
         _remainingReclaims = Mathf.Max(0, spell.Modifier.MaxReclaimsPerCast);
-        _remainingPoisonClouds = spell.Modifier.Type == ModifierWordType.Piercing ? int.MaxValue : 1;
     }
 
-    public bool TryConsumeExplosion()
+    public SpellImpactBudget CreateImpactBudget()
     {
-        if (_remainingExplosions <= 0)
-            return false;
-
-        _remainingExplosions--;
-        return true;
+        return new SpellImpactBudget(Modifier.Type == ModifierWordType.Piercing);
     }
 
     public bool TryConsumeReclaim()
@@ -44,16 +36,41 @@ public sealed class SpellCastRuntimeData
         _remainingReclaims--;
         return true;
     }
+}
+
+/// <summary>
+/// Limits effects that should occur once per physical projectile. Beam branches share one budget.
+/// </summary>
+public sealed class SpellImpactBudget
+{
+    private readonly bool _allowPoisonCloudPerTarget;
+    private readonly HashSet<ICombatTarget> _poisonCloudTargets = new();
+    private bool _explosionConsumed;
+    private bool _poisonCloudConsumed;
+
+    public SpellImpactBudget(bool allowPoisonCloudPerTarget)
+    {
+        _allowPoisonCloudPerTarget = allowPoisonCloudPerTarget;
+    }
+
+    public bool TryConsumeExplosion()
+    {
+        if (_explosionConsumed)
+            return false;
+
+        _explosionConsumed = true;
+        return true;
+    }
 
     public bool TryConsumePoisonCloud(ICombatTarget target)
     {
-        if (Modifier.Type == ModifierWordType.Piercing)
+        if (_allowPoisonCloudPerTarget)
             return target != null && _poisonCloudTargets.Add(target);
 
-        if (_remainingPoisonClouds <= 0)
+        if (_poisonCloudConsumed)
             return false;
 
-        _remainingPoisonClouds--;
+        _poisonCloudConsumed = true;
         return true;
     }
 }
