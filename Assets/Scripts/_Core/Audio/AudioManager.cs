@@ -13,6 +13,7 @@ public sealed class AudioManager : MonoBehaviour
 
     [Header("Music")]
     [SerializeField] private AudioSource _musicSource;
+    [SerializeField] private AudioSource _standbyMusicSource;
     [SerializeField] private AudioClip _menuMusicClip;
 
     [Header("UI SFX")]
@@ -24,6 +25,7 @@ public sealed class AudioManager : MonoBehaviour
     [field: SerializeField, Range(0f, 1f)] public float MasterVolume { get; private set; } = 1f;
 
     private float _musicSourceDefaultVolume = 1f;
+    private float _currentMusicTargetVolume = 1f;
     private Coroutine _fadeCoroutine;
 
     private void Awake()
@@ -38,6 +40,7 @@ public sealed class AudioManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         _musicSourceDefaultVolume = Mathf.Clamp01(_musicSource.volume);
+        _currentMusicTargetVolume = _musicSourceDefaultVolume;
         MasterVolume = PlayerPrefs.GetFloat(MasterVolumePrefKey, MasterVolume);
         AudioListener.volume = MasterVolume;
     }
@@ -60,19 +63,70 @@ public sealed class AudioManager : MonoBehaviour
         }
 
         bool shouldStartFade = shouldFadeIn && ShouldStartNewMusic(_menuMusicClip);
-        PlayMusic(_menuMusicClip, shouldLoop, shouldStartFade);
+        PlayMusic(_menuMusicClip, shouldLoop, shouldStartFade, _musicSourceDefaultVolume);
 
         if (shouldStartFade)
             FadeInMusic(fadeDuration);
     }
 
-    public void PlayGameplayMusic(AudioClip clip, bool shouldFadeIn, float fadeDuration, bool shouldLoop = false)
+    public void PlayGameplayMusic(AudioClip clip, bool shouldFadeIn, float fadeDuration, float volumeScale, bool shouldLoop = false)
     {
         bool shouldStartFade = shouldFadeIn && ShouldStartNewMusic(clip);
-        PlayMusic(clip, shouldLoop, shouldStartFade);
+        PlayMusic(clip, shouldLoop, shouldStartFade, ResolveMusicVolume(volumeScale));
 
         if (shouldStartFade)
             FadeInMusic(fadeDuration);
+    }
+
+    /// <summary>
+    /// Crossfades from the active music source to the serialized standby source. Both sources play during
+    /// the transition because a single AudioSource cannot overlap two clips. The incoming clip begins at
+    /// the supplied normalized position, its volume rises while the outgoing volume falls, and the source
+    /// references swap afterward so the stopped outgoing source can be reused for the next crossfade.
+    /// </summary>
+    public void CrossfadeGameplayMusic(AudioClip clip, float normalizedPlaybackPosition, float fadeDuration, float volumeScale)
+    {
+        if (clip == null || _musicSource == null || _standbyMusicSource == null)
+            return;
+
+        float targetVolume = ResolveMusicVolume(volumeScale);
+        if (IsCurrentMusic(clip))
+        {
+            _currentMusicTargetVolume = targetVolume;
+            _musicSource.volume = targetVolume;
+            return;
+        }
+
+        StopFadeCoroutineIfRunning();
+
+        AudioSource outgoingSource = _musicSource;
+        AudioSource incomingSource = _standbyMusicSource;
+        PrepareSourceForPlayback(incomingSource, clip, shouldLoop: false, volume: 0f);
+        SetNormalizedPlaybackPosition(incomingSource, normalizedPlaybackPosition);
+        incomingSource.Play();
+
+        _musicSource = incomingSource;
+        _standbyMusicSource = outgoingSource;
+        _currentMusicTargetVolume = targetVolume;
+
+        if (fadeDuration <= 0f || !outgoingSource.isPlaying)
+        {
+            StopSource(outgoingSource);
+            incomingSource.volume = targetVolume;
+            return;
+        }
+
+        _fadeCoroutine = StartCoroutine(CrossfadeMusicCoroutine(incomingSource, outgoingSource, targetVolume, fadeDuration));
+    }
+
+    public bool TryGetCurrentMusicNormalizedPosition(AudioClip clip, out float normalizedPlaybackPosition)
+    {
+        normalizedPlaybackPosition = 0f;
+        if (!IsCurrentMusic(clip) || clip.samples <= 0)
+            return false;
+
+        normalizedPlaybackPosition = Mathf.Clamp01((float)_musicSource.timeSamples / clip.samples);
+        return true;
     }
 
     public bool IsCurrentMusic(AudioClip clip)
@@ -82,7 +136,7 @@ public sealed class AudioManager : MonoBehaviour
 
     public bool IsPlayingMusic(AudioClip clip)
     {
-        return IsCurrentMusic(clip) && _musicSource != null && _musicSource.isPlaying;
+        return IsCurrentMusic(clip) && _musicSource.isPlaying;
     }
 
     public void PlayUiHoverSfx()
@@ -98,19 +152,23 @@ public sealed class AudioManager : MonoBehaviour
     public void StopMusic()
     {
         StopFadeCoroutineIfRunning();
+        StopSource(_standbyMusicSource);
         _musicSource.Stop();
+        _currentMusicTargetVolume = _musicSourceDefaultVolume;
         _musicSource.volume = _musicSourceDefaultVolume;
     }
 
     public void PauseMusic()
     {
         StopFadeCoroutineIfRunning();
+        StopSource(_standbyMusicSource);
+        _musicSource.volume = _currentMusicTargetVolume;
         _musicSource.Pause();
     }
 
     public void ResumeMusic()
     {
-        _musicSource.volume = _musicSourceDefaultVolume;
+        _musicSource.volume = _currentMusicTargetVolume;
         _musicSource.UnPause();
     }
 
@@ -124,7 +182,7 @@ public sealed class AudioManager : MonoBehaviour
         if (_musicSource.isPlaying && fadeDuration > 0f)
             _musicSource.volume = 0f;
 
-        FadeMusic(_musicSourceDefaultVolume, fadeDuration, false);
+        FadeMusic(_currentMusicTargetVolume, fadeDuration, false);
     }
 
     private bool ShouldStartNewMusic(AudioClip clip)
@@ -135,20 +193,26 @@ public sealed class AudioManager : MonoBehaviour
         return _musicSource.clip != clip || !_musicSource.isPlaying;
     }
 
-    private void PlayMusic(AudioClip clip, bool shouldLoop, bool startSilent)
+    private void PlayMusic(AudioClip clip, bool shouldLoop, bool startSilent, float targetVolume)
     {
         if (clip == null)
         {
-            _musicSource.Stop();
+            StopMusic();
             return;
         }
 
-        if (_musicSource.clip == clip && _musicSource.isPlaying)
-            return;
+        _currentMusicTargetVolume = targetVolume;
 
-        _musicSource.clip = clip;
-        _musicSource.loop = shouldLoop;
-        _musicSource.volume = startSilent ? 0f : _musicSourceDefaultVolume;
+        if (_musicSource.clip == clip && _musicSource.isPlaying)
+        {
+            _musicSource.loop = shouldLoop;
+            _musicSource.volume = startSilent ? 0f : targetVolume;
+            return;
+        }
+
+        StopFadeCoroutineIfRunning();
+        StopSource(_standbyMusicSource);
+        PrepareSourceForPlayback(_musicSource, clip, shouldLoop, startSilent ? 0f : targetVolume);
         _musicSource.Play();
     }
 
@@ -165,6 +229,7 @@ public sealed class AudioManager : MonoBehaviour
     private void FadeMusic(float targetVolume, float fadeDuration, bool stopMusicOnComplete)
     {
         StopFadeCoroutineIfRunning();
+        StopSource(_standbyMusicSource);
         _fadeCoroutine = StartCoroutine(FadeMusicCoroutine(targetVolume, fadeDuration, stopMusicOnComplete));
     }
 
@@ -206,6 +271,25 @@ public sealed class AudioManager : MonoBehaviour
         _fadeCoroutine = null;
     }
 
+    private IEnumerator CrossfadeMusicCoroutine(AudioSource incomingSource, AudioSource outgoingSource, float targetVolume, float fadeDuration)
+    {
+        float elapsed = 0f;
+        float outgoingStartVolume = outgoingSource.volume;
+
+        while (elapsed < fadeDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / fadeDuration);
+            incomingSource.volume = Mathf.Sin(t * Mathf.PI * 0.5f) * targetVolume;
+            outgoingSource.volume = Mathf.Cos(t * Mathf.PI * 0.5f) * outgoingStartVolume;
+            yield return null;
+        }
+
+        incomingSource.volume = targetVolume;
+        StopSource(outgoingSource);
+        _fadeCoroutine = null;
+    }
+
     private bool TryPrepareMusicSourceForFade()
     {
         if (_musicSource == null || _musicSource.clip == null)
@@ -224,5 +308,37 @@ public sealed class AudioManager : MonoBehaviour
 
         StopCoroutine(_fadeCoroutine);
         _fadeCoroutine = null;
+    }
+
+    private float ResolveMusicVolume(float volumeScale)
+    {
+        return _musicSourceDefaultVolume * Mathf.Clamp01(volumeScale);
+    }
+
+
+    private static void PrepareSourceForPlayback(AudioSource source, AudioClip clip, bool shouldLoop, float volume)
+    {
+        source.Stop();
+        source.clip = clip;
+        source.loop = shouldLoop;
+        source.volume = volume;
+    }
+
+    private static void SetNormalizedPlaybackPosition(AudioSource source, float normalizedPlaybackPosition)
+    {
+        if (source.clip == null || source.clip.samples <= 1)
+            return;
+
+        int sample = Mathf.RoundToInt(Mathf.Clamp01(normalizedPlaybackPosition) * (source.clip.samples - 1));
+        source.timeSamples = sample;
+    }
+
+    private static void StopSource(AudioSource source)
+    {
+        if (source == null)
+            return;
+
+        source.Stop();
+        source.volume = 0f;
     }
 }

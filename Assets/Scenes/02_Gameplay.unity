@@ -10083,12 +10083,13 @@ MonoBehaviour:
     Clip: {fileID: 8300000, guid: 73f1460901dd26344984d042b0001372, type: 3}
   - Biome: 4
     Clip: {fileID: 8300000, guid: 475f2550c48a4f54cad765dffcf4cb83, type: 3}
+  _biomeMusicVolume: 0.7
   _biomeCheckIntervalSeconds: 0.5
-  _minStartDelaySeconds: 12
-  _maxStartDelaySeconds: 25
-  _fadeInSeconds: 1.5
-  _minFadeOutSeconds: 1
-  _maxFadeOutSeconds: 4
+  _minSilenceDurationSeconds: 40
+  _maxSilenceDurationSeconds: 120
+  _biomeChangeDebounceSeconds: 1.5
+  _crossfadeDurationSeconds: 0.5
+  _stopFadeDurationSeconds: 1
 --- !u!1 &1114828489
 GameObject:
   m_ObjectHideFlags: 0

@@ -2,11 +2,8 @@ using System;
 using UnityEngine;
 
 /// <summary>
-/// Controls biome-based exploration music during gameplay. When the player stays in a biome,
-/// the matching ambient track starts after a randomized delay and fades in. Tracks play once by default,
-/// then use the same randomized delay before another cue can start. On biome changes, current biome music
-/// fades out immediately, then the next biome track is scheduled. Music also fades out when the player dies.
-/// Music pauses immediately when the game is paused and resumes when unpaused.
+/// Schedules non-looping exploration music for the player's current biome. Biome changes are confirmed
+/// only after a stability delay, then the next track is crossfaded in at the same normalized position.
 /// </summary>
 [DisallowMultipleComponent]
 public sealed class GameplayBiomeMusicController : MonoBehaviour
@@ -25,23 +22,24 @@ public sealed class GameplayBiomeMusicController : MonoBehaviour
 
     [Header("Biome Tracks")]
     [SerializeField] private BiomeMusicTrack[] _biomeTracks;
+    [SerializeField, Range(0f, 1f)] private float _biomeMusicVolume = 0.7f;
 
-    [Header("Start Timing")]
+    [Header("Timing")]
     [SerializeField, Min(0.05f)] private float _biomeCheckIntervalSeconds = 0.5f;
-    [SerializeField, Min(0f)] private float _minStartDelaySeconds = 12f;
-    [SerializeField, Min(0f)] private float _maxStartDelaySeconds = 25f;
-    [SerializeField, Min(0f)] private float _fadeInSeconds = 1.5f;
+    [SerializeField, Min(0f)] private float _minSilenceDurationSeconds = 40f;
+    [SerializeField, Min(0f)] private float _maxSilenceDurationSeconds = 120f;
+    [SerializeField, Min(0f)] private float _biomeChangeDebounceSeconds = 1.5f;
+    [SerializeField, Min(0f)] private float _crossfadeDurationSeconds = 0.5f;
+    [SerializeField, Min(0f)] private float _stopFadeDurationSeconds = 1f;
 
-    [Header("Stop Timing")]
-    [SerializeField, Min(0f)] private float _minFadeOutSeconds = 1f;
-    [SerializeField, Min(0f)] private float _maxFadeOutSeconds = 4f;
-
-    private WorldBiomeType _observedBiome = WorldBiomeType.None;
-    private WorldBiomeType _scheduledBiome = WorldBiomeType.None;
+    private WorldBiomeType _confirmedBiome = WorldBiomeType.None;
+    private WorldBiomeType _candidateBiome = WorldBiomeType.None;
     private AudioClip _ownedClip;
+    private float _candidateDetectedTime;
     private float _nextBiomeCheckTime;
-    private float _scheduledStartTime;
+    private float _scheduledStartTime = float.PositiveInfinity;
     private bool _ownsActiveMusic;
+    private bool _playbackSuppressed;
 
     private void OnEnable()
     {
@@ -50,91 +48,131 @@ public sealed class GameplayBiomeMusicController : MonoBehaviour
 
     private void Start()
     {
-        if (_player.Data != null)
+        if (_player != null && _player.Data != null)
             _player.Data.OnHealthChanged += HandlePlayerHealthChanged;
     }
 
     private void Update()
     {
-        if (GameStateManager.IsGamePaused)
-            return;
-
-        if (Time.time < _nextBiomeCheckTime)
+        if (GameStateManager.IsGamePaused || _playbackSuppressed || Time.time < _nextBiomeCheckTime)
             return;
 
         _nextBiomeCheckTime = Time.time + _biomeCheckIntervalSeconds;
 
+        if (AudioManager.Instance == null)
+            return;
+
         HandleOwnedMusicCompletion();
 
-        if (!TryResolveCurrentBiome(out WorldBiomeType currentBiome) || !TryGetClip(currentBiome, out AudioClip clip))
-        {
-            ClearScheduledStart();
+        if (!TryResolveCurrentBiome(out WorldBiomeType detectedBiome))
             return;
-        }
 
-        if (currentBiome != _observedBiome)
-        {
-            _observedBiome = currentBiome;
-            FadeOutCurrentBiomeMusic();
-            ScheduleBiomeStart(currentBiome);
+        UpdateConfirmedBiome(detectedBiome);
+
+        if (_confirmedBiome == WorldBiomeType.None || _ownsActiveMusic)
             return;
-        }
 
-        if (_scheduledBiome == WorldBiomeType.None)
-            ScheduleBiomeStart(currentBiome);
+        EnsureTrackScheduled();
+        if (Time.time < _scheduledStartTime || !TryGetClip(_confirmedBiome, out AudioClip clip))
+            return;
 
-        if (_scheduledBiome == currentBiome && Time.time >= _scheduledStartTime)
-            StartOrSwitchToBiomeMusic(currentBiome, clip);
+        PlayBiomeMusic(clip);
     }
 
     private void OnDisable()
     {
         GameStateManager.PauseChanged -= HandlePauseChanged;
-        _player.Data.OnHealthChanged -= HandlePlayerHealthChanged;
+
+        if (_player != null && _player.Data != null)
+            _player.Data.OnHealthChanged -= HandlePlayerHealthChanged;
+
         StopGameplayMusic();
     }
 
     public void StopGameplayMusic()
     {
+        _playbackSuppressed = true;
+        ClearCandidateBiome();
         ClearScheduledStart();
 
-        if (_ownedClip == null || !AudioManager.Instance.IsCurrentMusic(_ownedClip))
-            return;
-
-        AudioManager.Instance.FadeOutMusic(UnityEngine.Random.Range(_minFadeOutSeconds, _maxFadeOutSeconds));
-        _ownsActiveMusic = false;
-        _ownedClip = null;
-    }
-
-    private void StartOrSwitchToBiomeMusic(WorldBiomeType biome, AudioClip clip)
-    {
-        if (AudioManager.Instance.IsPlayingMusic(clip))
+        if (AudioManager.Instance == null || _ownedClip == null || !AudioManager.Instance.IsCurrentMusic(_ownedClip))
         {
-            ClearScheduledStart();
-            _ownsActiveMusic = true;
-            _ownedClip = clip;
+            ClearOwnedMusic();
             return;
         }
 
-        PlayBiomeMusic(clip);
-        ClearScheduledStart();
+        AudioManager.Instance.FadeOutMusic(_stopFadeDurationSeconds);
+        ClearOwnedMusic();
     }
 
-    private void FadeOutCurrentBiomeMusic()
+    private void UpdateConfirmedBiome(WorldBiomeType detectedBiome)
     {
-        if (!_ownsActiveMusic || _ownedClip == null || !AudioManager.Instance.IsCurrentMusic(_ownedClip))
+        if (_confirmedBiome == WorldBiomeType.None)
+        {
+            ConfirmBiome(detectedBiome);
+            return;
+        }
+
+        if (detectedBiome == _confirmedBiome)
+        {
+            ClearCandidateBiome();
+            return;
+        }
+
+        if (detectedBiome != _candidateBiome)
+        {
+            _candidateBiome = detectedBiome;
+            _candidateDetectedTime = Time.time;
+            return;
+        }
+
+        if (Time.time - _candidateDetectedTime < _biomeChangeDebounceSeconds)
             return;
 
-        AudioManager.Instance.FadeOutMusic(UnityEngine.Random.Range(_minFadeOutSeconds, _maxFadeOutSeconds));
-        _ownsActiveMusic = false;
-        _ownedClip = null;
+        ConfirmBiome(detectedBiome);
+    }
+
+    private void ConfirmBiome(WorldBiomeType biome)
+    {
+        _confirmedBiome = biome;
+        ClearCandidateBiome();
+
+        if (_ownsActiveMusic)
+            SwitchActiveBiomeMusic(biome);
+    }
+
+    private void SwitchActiveBiomeMusic(WorldBiomeType biome)
+    {
+        if (AudioManager.Instance == null || _ownedClip == null || !TryGetClip(biome, out AudioClip nextClip))
+            return;
+
+        if (!AudioManager.Instance.TryGetCurrentMusicNormalizedPosition(_ownedClip, out float normalizedPlaybackPosition))
+        {
+            ClearOwnedMusic();
+            EnsureTrackScheduled();
+            return;
+        }
+
+        AudioManager.Instance.CrossfadeGameplayMusic(
+            nextClip,
+            normalizedPlaybackPosition,
+            _crossfadeDurationSeconds,
+            _biomeMusicVolume);
+        _ownedClip = nextClip;
     }
 
     private void PlayBiomeMusic(AudioClip clip)
     {
-        AudioManager.Instance.PlayGameplayMusic(clip, shouldFadeIn: true, fadeDuration: _fadeInSeconds, shouldLoop: false);
+        AudioManager.Instance.PlayGameplayMusic(
+            clip,
+            shouldFadeIn: true,
+            fadeDuration: _crossfadeDurationSeconds,
+            volumeScale: _biomeMusicVolume,
+            shouldLoop: false);
+
         _ownsActiveMusic = true;
         _ownedClip = clip;
+        ClearScheduledStart();
     }
 
     private void HandleOwnedMusicCompletion()
@@ -144,29 +182,38 @@ public sealed class GameplayBiomeMusicController : MonoBehaviour
 
         if (!AudioManager.Instance.IsCurrentMusic(_ownedClip))
         {
-            _ownsActiveMusic = false;
-            _ownedClip = null;
+            ClearOwnedMusic();
+            EnsureTrackScheduled();
             return;
         }
 
         if (AudioManager.Instance.IsPlayingMusic(_ownedClip))
             return;
 
-        _ownsActiveMusic = false;
-        _ownedClip = null;
-        ClearScheduledStart();
+        ClearOwnedMusic();
+        ScheduleNextTrack();
     }
 
     private void HandlePlayerHealthChanged(int currentHealth, int maxHealth)
     {
-        if (currentHealth > 0)
+        if (currentHealth <= 0)
+        {
+            StopGameplayMusic();
+            return;
+        }
+
+        if (!_playbackSuppressed)
             return;
 
-        StopGameplayMusic();
+        _playbackSuppressed = false;
+        EnsureTrackScheduled();
     }
 
     private void HandlePauseChanged(bool isPaused)
     {
+        if (AudioManager.Instance == null)
+            return;
+
         if (isPaused)
         {
             AudioManager.Instance.PauseMusic();
@@ -180,7 +227,7 @@ public sealed class GameplayBiomeMusicController : MonoBehaviour
     {
         biome = WorldBiomeType.None;
 
-        if (!_worldGenerator.RuntimeState.IsInitialized)
+        if (_worldGenerator == null || _playerTransform == null || !_worldGenerator.RuntimeState.IsInitialized)
             return false;
 
         Vector2Int tile = _worldGenerator.RuntimeState.ResolveTileFromWorld(_playerTransform.position);
@@ -190,33 +237,51 @@ public sealed class GameplayBiomeMusicController : MonoBehaviour
 
     private bool TryGetClip(WorldBiomeType biome, out AudioClip clip)
     {
-        for (int i = 0; i < _biomeTracks.Length; i++)
+        if (_biomeTracks != null)
         {
-            if (_biomeTracks[i].Biome != biome)
-                continue;
+            for (int i = 0; i < _biomeTracks.Length; i++)
+            {
+                if (_biomeTracks[i].Biome != biome)
+                    continue;
 
-            clip = _biomeTracks[i].Clip;
-            return clip != null;
+                clip = _biomeTracks[i].Clip;
+                return clip != null;
+            }
         }
 
         clip = null;
         return false;
     }
 
-    private void ScheduleBiomeStart(WorldBiomeType biome)
+    private void EnsureTrackScheduled()
     {
-        ScheduleStart(biome, UnityEngine.Random.Range(_minStartDelaySeconds, _maxStartDelaySeconds));
+        if (!float.IsPositiveInfinity(_scheduledStartTime))
+            return;
+
+        ScheduleNextTrack();
     }
 
-    private void ScheduleStart(WorldBiomeType biome, float delaySeconds)
+    private void ScheduleNextTrack()
     {
-        _scheduledBiome = biome;
-        _scheduledStartTime = Time.time + delaySeconds;
+        float minimum = Mathf.Min(_minSilenceDurationSeconds, _maxSilenceDurationSeconds);
+        float maximum = Mathf.Max(_minSilenceDurationSeconds, _maxSilenceDurationSeconds);
+        _scheduledStartTime = Time.time + UnityEngine.Random.Range(minimum, maximum);
+    }
+
+    private void ClearOwnedMusic()
+    {
+        _ownsActiveMusic = false;
+        _ownedClip = null;
+    }
+
+    private void ClearCandidateBiome()
+    {
+        _candidateBiome = WorldBiomeType.None;
+        _candidateDetectedTime = 0f;
     }
 
     private void ClearScheduledStart()
     {
-        _scheduledBiome = WorldBiomeType.None;
         _scheduledStartTime = float.PositiveInfinity;
     }
 }
