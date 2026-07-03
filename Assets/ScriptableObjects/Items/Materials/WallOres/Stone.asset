@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cb46976bd70d81242b125b463234bffe, type: 3}
-  m_Name: RiftstoneOre
+  m_Name: Stone
   m_EditorClassIdentifier: 
-  <ItemName>k__BackingField: Riftstone Ore
-  <Icon>k__BackingField: {fileID: -4508949321610508396, guid: 6aa72c62d135e0649981c5f1dc2db10f, type: 3}
+  <ItemName>k__BackingField: Stone
+  <Icon>k__BackingField: {fileID: 5367753294962327426, guid: 6aa72c62d135e0649981c5f1dc2db10f, type: 3}
   <Category>k__BackingField: 3
-  <Rarity>k__BackingField: 1
-  <BiomeAffinity>k__BackingField: 4
+  <Rarity>k__BackingField: 0
+  <BiomeAffinity>k__BackingField: 1
   <MaxStackSize>k__BackingField: 9999
   <HeldPresentationMode>k__BackingField: 0
   <HeldScale>k__BackingField: {x: 0.3, y: 0.3}
