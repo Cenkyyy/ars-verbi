@@ -38,23 +38,26 @@ public sealed class EntityNavigationController : MonoBehaviour
         Gizmos.DrawSphere(_currentPath[_pathIndex], 0.12f);
     }
 
-    public bool CanUsePathPosition(Vector2 worldPosition, float pathProbeRadius)
+    public bool CanUsePathPosition(Vector2 worldPosition, Collider2D movementCollider)
     {
-        return WorldChunkNavigationController.Instance.IsWorldAreaWalkable(worldPosition, pathProbeRadius);
+        ResolveMovementClearance(movementCollider, out Vector2 probeCenterOffset, out float probeRadius);
+        return CanUsePathPosition(worldPosition, probeCenterOffset, probeRadius);
     }
 
     public Vector2 MoveTo(
         Vector2 worldTarget,
-        float pathProbeRadius,
+        Collider2D movementCollider,
         float repathIntervalSeconds,
         float pathNodeStep,
         int maxPathIterations,
         bool hasDetourTarget = false,
         Vector2 detourTarget = default)
     {
+        ResolveMovementClearance(movementCollider, out Vector2 probeCenterOffset, out float probeRadius);
+
         var targetShifted = _hasLastRepathTarget && (worldTarget - _lastRepathTarget).sqrMagnitude > pathNodeStep * pathNodeStep;
         if (_pathIndex < 0 || !_hasLastRepathTarget || targetShifted || Time.time >= _nextAllowedRepathTime)
-            RebuildPath(worldTarget, pathProbeRadius, repathIntervalSeconds, pathNodeStep, maxPathIterations);
+            RebuildPath(worldTarget, probeCenterOffset, probeRadius, repathIntervalSeconds, pathNodeStep, maxPathIterations);
 
         while (_pathIndex >= 0 && _pathIndex < _currentPath.Count)
         {
@@ -68,9 +71,9 @@ public sealed class EntityNavigationController : MonoBehaviour
         if (_pathIndex >= 0 && _pathIndex < _currentPath.Count)
             return MoveTowards(_currentPath[_pathIndex]);
 
-        if (!CanMoveDirectlyTo(worldTarget, pathProbeRadius))
+        if (!CanMoveDirectlyTo(worldTarget, probeCenterOffset, probeRadius))
         {
-            if (hasDetourTarget && TryMoveToDetour(detourTarget, pathProbeRadius, out var detourDirection))
+            if (hasDetourTarget && TryMoveToDetour(detourTarget, probeCenterOffset, probeRadius, out var detourDirection))
                 return detourDirection;
 
             Stop();
@@ -85,7 +88,13 @@ public sealed class EntityNavigationController : MonoBehaviour
         _movement.Stop();
     }
 
-    private void RebuildPath(Vector2 worldTarget, float pathProbeRadius, float repathIntervalSeconds, float pathNodeStep, int maxPathIterations)
+    private void RebuildPath(
+        Vector2 worldTarget,
+        Vector2 probeCenterOffset,
+        float probeRadius,
+        float repathIntervalSeconds,
+        float pathNodeStep,
+        int maxPathIterations)
     {
         _nextAllowedRepathTime = Time.time + repathIntervalSeconds;
         _lastRepathTarget = worldTarget;
@@ -96,7 +105,8 @@ public sealed class EntityNavigationController : MonoBehaviour
             startWorld: transform.position,
             targetWorld: worldTarget,
             nodeStep: pathNodeStep,
-            probeRadius: pathProbeRadius,
+            probeCenterOffset: probeCenterOffset,
+            probeRadius: probeRadius,
             maxIterations: maxPathIterations,
             output: _currentPath
         );
@@ -108,17 +118,17 @@ public sealed class EntityNavigationController : MonoBehaviour
         _pathIndex = -1;
     }
 
-    private bool CanMoveDirectlyTo(Vector2 worldTarget, float pathProbeRadius)
+    private bool CanMoveDirectlyTo(Vector2 worldTarget, Vector2 probeCenterOffset, float probeRadius)
     {
         var from = (Vector2)transform.position;
         var toTarget = worldTarget - from;
         if (toTarget.sqrMagnitude <= _movement.ArrivalEpsilon * _movement.ArrivalEpsilon)
             return true;
 
-        return WorldChunkNavigationController.Instance.CanMoveDirectly(from, worldTarget, pathProbeRadius);
+        return WorldChunkNavigationController.Instance.CanMoveDirectly(from, worldTarget, probeCenterOffset, probeRadius);
     }
 
-    private bool TryMoveToDetour(Vector2 worldTarget, float pathProbeRadius, out Vector2 desiredDirection)
+    private bool TryMoveToDetour(Vector2 worldTarget, Vector2 probeCenterOffset, float probeRadius, out Vector2 desiredDirection)
     {
         desiredDirection = Vector2.zero;
 
@@ -128,13 +138,13 @@ public sealed class EntityNavigationController : MonoBehaviour
             return false;
 
         var lateral = Vector2.Perpendicular(toTarget.normalized);
-        var probeDistance = Mathf.Max(pathProbeRadius * 3f, _movement.ArrivalEpsilon * 2f);
+        var probeDistance = Mathf.Max(probeRadius * 3f, _movement.ArrivalEpsilon * 2f);
 
         var detourA = from + lateral * probeDistance;
         var detourB = from - lateral * probeDistance;
 
-        var aBlocked = !CanUsePathPosition(detourA, pathProbeRadius);
-        var bBlocked = !CanUsePathPosition(detourB, pathProbeRadius);
+        var aBlocked = !CanUsePathPosition(detourA, probeCenterOffset, probeRadius);
+        var bBlocked = !CanUsePathPosition(detourB, probeCenterOffset, probeRadius);
 
         if (aBlocked && bBlocked)
             return false;
@@ -146,6 +156,21 @@ public sealed class EntityNavigationController : MonoBehaviour
 
         desiredDirection = MoveTowards(detour);
         return true;
+    }
+
+    private bool CanUsePathPosition(Vector2 worldPosition, Vector2 probeCenterOffset, float probeRadius)
+    {
+        return WorldChunkNavigationController.Instance.IsWorldAreaWalkable(worldPosition + probeCenterOffset, probeRadius);
+    }
+
+    private void ResolveMovementClearance(Collider2D movementCollider, out Vector2 probeCenterOffset, out float probeRadius)
+    {
+        if (movementCollider == null)
+            throw new MissingReferenceException($"{name} requires a movement collider for navigation.");
+
+        Bounds bounds = movementCollider.bounds;
+        probeCenterOffset = (Vector2)bounds.center - (Vector2)transform.position;
+        probeRadius = ((Vector2)bounds.extents).magnitude;
     }
 
     private Vector2 MoveTowards(Vector2 worldTarget)

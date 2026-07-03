@@ -40,6 +40,7 @@ public sealed class WorldChunkNavigationController : MonoBehaviour
         Vector2 startWorld,
         Vector2 targetWorld,
         float nodeStep,
+        Vector2 probeCenterOffset,
         float probeRadius,
         int maxIterations,
         List<Vector2> output)
@@ -48,6 +49,7 @@ public sealed class WorldChunkNavigationController : MonoBehaviour
             startWorld: startWorld,
             goalWorld: targetWorld,
             nodeStep: nodeStep,
+            probeCenterOffset: probeCenterOffset,
             probeRadius: probeRadius,
             maxIterations: maxIterations,
             output: output,
@@ -56,11 +58,11 @@ public sealed class WorldChunkNavigationController : MonoBehaviour
         );
     }
 
-    public bool CanMoveDirectly(Vector2 startWorld, Vector2 targetWorld, float probeRadius)
+    public bool CanMoveDirectly(Vector2 startWorld, Vector2 targetWorld, Vector2 probeCenterOffset, float probeRadius)
     {
         var offset = targetWorld - startWorld;
         if (offset.sqrMagnitude <= Mathf.Epsilon)
-            return IsWorldAreaWalkable(targetWorld, probeRadius);
+            return IsWorldAreaWalkable(targetWorld + probeCenterOffset, probeRadius);
 
         var distance = offset.magnitude;
         var stepDistance = _cellSize * 0.5f;
@@ -70,7 +72,7 @@ public sealed class WorldChunkNavigationController : MonoBehaviour
         for (var i = 0; i <= steps; i++)
         {
             var sample = startWorld + direction * i;
-            if (!IsWorldAreaWalkable(sample, probeRadius))
+            if (!IsWorldAreaWalkable(sample + probeCenterOffset, probeRadius))
                 return false;
         }
 

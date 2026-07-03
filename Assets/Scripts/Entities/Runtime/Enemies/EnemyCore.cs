@@ -12,7 +12,7 @@ public class EnemyCore : EntityCore
     [SerializeField] private EnemyAnimationController _animation;
 
     [Header("Pathfinding")]
-    [SerializeField] private float _pathProbeRadius = 0.18f;
+    [SerializeField, Tooltip("Solid feet collider used by physics and approximated for navigation clearance.")] private Collider2D _movementCollider;
 
     protected const int PatrolSampleMaxAttempts = 12;
 
@@ -28,7 +28,7 @@ public class EnemyCore : EntityCore
     public override EntityRuntimeData RuntimeData { get; } = new();
     public Vector2 HomePoint => _homePoint;
     protected EnemyAnimationController Animation => _animation;
-    protected float PathProbeRadius => _pathProbeRadius;
+    protected Collider2D MovementCollider => _movementCollider;
 
     protected virtual void Awake()
     {
@@ -162,7 +162,7 @@ public class EnemyCore : EntityCore
     {
         MoveToUsingPath(
             worldTarget: worldTarget,
-            pathProbeRadius: _pathProbeRadius,
+            movementCollider: _movementCollider,
             repathIntervalSeconds: Data.RepathIntervalSeconds,
             pathNodeStep: Data.PathNodeStep,
             maxPathIterations: Data.MaxPathIterations,
@@ -189,7 +189,7 @@ public class EnemyCore : EntityCore
         for (var i = 0; i < PatrolSampleMaxAttempts; i++)
         {
             var sampled = HomePoint + Random.insideUnitCircle * Data.HomeRadius;
-            if (!CanUsePathPosition(sampled, _pathProbeRadius))
+            if (!CanUsePathPosition(sampled, _movementCollider))
                 continue;
 
             _patrolTarget = sampled;

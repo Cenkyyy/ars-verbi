@@ -51,14 +51,14 @@ public abstract class EntityCore : MonoBehaviour
         HandleMovementDirection(Vector2.zero);
     }
 
-    protected bool CanUsePathPosition(Vector2 worldPosition, float pathProbeRadius)
+    protected bool CanUsePathPosition(Vector2 worldPosition, Collider2D movementCollider)
     {
-        return Navigation.CanUsePathPosition(worldPosition, pathProbeRadius);
+        return Navigation.CanUsePathPosition(worldPosition, movementCollider);
     }
 
     protected void MoveToUsingPath(
         Vector2 worldTarget,
-        float pathProbeRadius,
+        Collider2D movementCollider,
         float repathIntervalSeconds,
         float pathNodeStep,
         int maxPathIterations,
@@ -67,7 +67,7 @@ public abstract class EntityCore : MonoBehaviour
     {
         var movementDirection = Navigation.MoveTo(
             worldTarget: worldTarget,
-            pathProbeRadius: pathProbeRadius,
+            movementCollider: movementCollider,
             repathIntervalSeconds: repathIntervalSeconds,
             pathNodeStep: pathNodeStep,
             maxPathIterations: maxPathIterations,

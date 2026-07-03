@@ -85,7 +85,7 @@ public sealed class RangedEnemyCore : EnemyCore
         {
             var direction = Quaternion.Euler(0f, 0f, Random.Range(-65f, 65f)) * away;
             var sampled = reference + (Vector2)direction.normalized * desiredDistance;
-            if (!CanUsePathPosition(sampled, PathProbeRadius))
+            if (!CanUsePathPosition(sampled, MovementCollider))
                 continue;
 
             var distance = (sampled - reference).sqrMagnitude;

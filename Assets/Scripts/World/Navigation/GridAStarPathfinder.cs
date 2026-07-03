@@ -24,6 +24,7 @@ public static class GridAStarPathfinder
         Vector2 startWorld,
         Vector2 goalWorld,
         float nodeStep,
+        Vector2 probeCenterOffset,
         float probeRadius,
         int maxIterations,
         List<Vector2> output,
@@ -58,7 +59,7 @@ public static class GridAStarPathfinder
                 return output.Count > 0;
             }
 
-            var currentHeuristic = Heuristic(current, goalCell) + (IsBlocked(current, nodeStep, probeRadius, blockedByCell, canUseWorldPosition) ? BlockedGoalPenalty : 0f);
+            var currentHeuristic = Heuristic(current, goalCell) + (IsBlocked(current, nodeStep, probeCenterOffset, probeRadius, blockedByCell, canUseWorldPosition) ? BlockedGoalPenalty : 0f);
             if (currentHeuristic < bestHeuristic)
             {
                 bestHeuristic = currentHeuristic;
@@ -66,7 +67,7 @@ public static class GridAStarPathfinder
             }
 
             closedList.Add(current);
-            VisitNeighbors(current, goalCell, nodeStep, probeRadius, canUseWorldPosition, blockedByCell, closedList, cameFrom, gScore, openList);
+            VisitNeighbors(current, goalCell, nodeStep, probeCenterOffset, probeRadius, canUseWorldPosition, blockedByCell, closedList, cameFrom, gScore, openList);
         }
 
         if (allowPartialPath && bestCell != startCell)
@@ -98,6 +99,7 @@ public static class GridAStarPathfinder
         Vector2Int current,
         Vector2Int goalCell,
         float nodeStep,
+        Vector2 probeCenterOffset,
         float probeRadius,
         Func<Vector2, float, bool> canUseWorldPosition,
         Dictionary<Vector2Int, bool> blockedByCell,
@@ -106,12 +108,12 @@ public static class GridAStarPathfinder
         Dictionary<Vector2Int, float> gScore,
         List<GridNode> openList)
     {
-        foreach (var neighbor in GetNeighbors(current, nodeStep, probeRadius, blockedByCell, canUseWorldPosition))
+        foreach (var neighbor in GetNeighbors(current, nodeStep, probeCenterOffset, probeRadius, blockedByCell, canUseWorldPosition))
         {
             if (closedList.Contains(neighbor))
                 continue;
 
-            if (IsBlocked(neighbor, nodeStep, probeRadius, blockedByCell, canUseWorldPosition))
+            if (IsBlocked(neighbor, nodeStep, probeCenterOffset, probeRadius, blockedByCell, canUseWorldPosition))
                 continue;
 
             var tentativeG = gScore[current] + StepCost(current, neighbor);
@@ -147,6 +149,7 @@ public static class GridAStarPathfinder
     private static IEnumerable<Vector2Int> GetNeighbors(
         Vector2Int cell,
         float nodeStep,
+        Vector2 probeCenterOffset,
         float probeRadius,
         Dictionary<Vector2Int, bool> blockedByCell,
         Func<Vector2, float, bool> canUseWorldPosition)
@@ -159,7 +162,7 @@ public static class GridAStarPathfinder
                     continue;
 
                 var neighbor = new Vector2Int(cell.x + x, cell.y + y);
-                if (x != 0 && y != 0 && IsDiagonalBlocked(cell, x, y, nodeStep, probeRadius, blockedByCell, canUseWorldPosition))
+                if (x != 0 && y != 0 && IsDiagonalBlocked(cell, x, y, nodeStep, probeCenterOffset, probeRadius, blockedByCell, canUseWorldPosition))
                     continue;
 
                 yield return neighbor;
@@ -172,14 +175,15 @@ public static class GridAStarPathfinder
         int x,
         int y,
         float nodeStep,
+        Vector2 probeCenterOffset,
         float probeRadius,
         Dictionary<Vector2Int, bool> blockedByCell,
         Func<Vector2, float, bool> canUseWorldPosition)
     {
         var horizontal = new Vector2Int(cell.x + x, cell.y);
         var vertical = new Vector2Int(cell.x, cell.y + y);
-        return IsBlocked(horizontal, nodeStep, probeRadius, blockedByCell, canUseWorldPosition) ||
-               IsBlocked(vertical, nodeStep, probeRadius, blockedByCell, canUseWorldPosition);
+        return IsBlocked(horizontal, nodeStep, probeCenterOffset, probeRadius, blockedByCell, canUseWorldPosition) ||
+               IsBlocked(vertical, nodeStep, probeCenterOffset, probeRadius, blockedByCell, canUseWorldPosition);
     }
 
     private static float StepCost(Vector2Int a, Vector2Int b)
@@ -197,6 +201,7 @@ public static class GridAStarPathfinder
     private static bool IsBlocked(
         Vector2Int cell,
         float nodeStep,
+        Vector2 probeCenterOffset,
         float probeRadius,
         Dictionary<Vector2Int, bool> blockedByCell,
         Func<Vector2, float, bool> canUseWorldPosition)
@@ -205,7 +210,7 @@ public static class GridAStarPathfinder
             return cachedBlocked;
 
         var world = ToWorld(cell, nodeStep);
-        blockedByCell[cell] = !canUseWorldPosition(world, probeRadius);
+        blockedByCell[cell] = !canUseWorldPosition(world + probeCenterOffset, probeRadius);
         return blockedByCell[cell];
     }
 
