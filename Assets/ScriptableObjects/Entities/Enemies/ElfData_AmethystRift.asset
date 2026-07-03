@@ -22,7 +22,7 @@ MonoBehaviour:
   <XpReward>k__BackingField: 95
   _drops:
   - _item: {fileID: 11400000, guid: 72576c15f21b407390c7d5c006462143, type: 2}
-    _dropChance: 0.5
+    _dropChance: 0.65
     _minAmount: 1
     _maxAmount: 1
   - _item: {fileID: 11400000, guid: 8760bdfa8ac54a56bab9d3ecf236cadb, type: 2}
@@ -38,23 +38,23 @@ MonoBehaviour:
   <RepathIntervalSeconds>k__BackingField: 0.7
   <PathNodeStep>k__BackingField: 0.5
   <MaxPathIterations>k__BackingField: 200
-  <DetectionRadius>k__BackingField: 5.5
+  <DetectionRadius>k__BackingField: 4.5
   <RetargetIntervalSeconds>k__BackingField: 0.2
-  <LeashRadius>k__BackingField: 10.5
+  <LeashRadius>k__BackingField: 9
   <InvestigationDurationMin>k__BackingField: 2.5
   <InvestigationDurationMax>k__BackingField: 4
   <HomeRadius>k__BackingField: 5
   <IdleDurationMin>k__BackingField: 0.8
   <IdleDurationMax>k__BackingField: 1.6
   <AttackDamage>k__BackingField: 36
-  <AttackRange>k__BackingField: 5.25
+  <AttackRange>k__BackingField: 4
   <AttackWindupSeconds>k__BackingField: 0.55
   <AttackHitWindowSeconds>k__BackingField: 0.15
   <AttackRecoverySeconds>k__BackingField: 0.8
-  <PreferredRangedDistance>k__BackingField: 4.75
-  <RangedRetreatBuffer>k__BackingField: 1.2
+  <PreferredRangedDistance>k__BackingField: 3.5
+  <RangedRetreatBuffer>k__BackingField: 0.75
   <RangedRepositionDurationMin>k__BackingField: 0.6
   <RangedRepositionDurationMax>k__BackingField: 1.1
   <ProjectilePrefab>k__BackingField: {fileID: 2987626352167526763, guid: b5cc102027b1e424f8231beb7f156950, type: 3}
   <ProjectileSpeed>k__BackingField: 8.2
-  <ProjectileLifetimeSeconds>k__BackingField: 2.5
+  <ProjectileLifetimeSeconds>k__BackingField: 1.5
