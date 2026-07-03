@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46989a09e1edfd74594f4a6f05ebb304, type: 3}
   m_Name: MemoryOre_Small
   m_EditorClassIdentifier: 
-  <RequiredToolType>k__BackingField: 0
-  <MinimumTier>k__BackingField: 0
+  <RequiredToolType>k__BackingField: 1
+  <MinimumTier>k__BackingField: 1
   <AllowHandMining>k__BackingField: 1
   <MaxDurability>k__BackingField: 3
   <ToolPowerMultiplier>k__BackingField: 1
+  <ReplenishDurationSeconds>k__BackingField: 4
   _drops: []
   <GrantsMemoryXP>k__BackingField: 1
-  <MemoryXpAmount>k__BackingField: 8
+  <MemoryXpAmount>k__BackingField: 30

@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46989a09e1edfd74594f4a6f05ebb304, type: 3}
   m_Name: IceTundra_Bush_Medium
   m_EditorClassIdentifier: 
-  <RequiredToolType>k__BackingField: 0
-  <MinimumTier>k__BackingField: 0
+  <RequiredToolType>k__BackingField: 2
+  <MinimumTier>k__BackingField: 1
   <AllowHandMining>k__BackingField: 1
   <MaxDurability>k__BackingField: 4
   <ToolPowerMultiplier>k__BackingField: 1
+  <ReplenishDurationSeconds>k__BackingField: 4
   _drops:
   - _item: {fileID: 11400000, guid: bb169f4bfcce4cd899f0186e97efb5a2, type: 2}
     _dropChance: 1

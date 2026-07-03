@@ -175,15 +175,26 @@ public sealed class PlayerMiningController : MonoBehaviour
     {
         toolState = default;
 
-        if (target != null)
+        if (target == null)
+            return false;
+
+        if (TryResolveSelectedTool(out var selectedToolState) && target.CanBeMinedWith(selectedToolState))
         {
-            var handState = MiningToolState.Hand(HandMiningPower);
-            if (target.CanBeMinedWith(handState))
-            {
-                toolState = handState;
-                return true;
-            }
+            toolState = selectedToolState;
+            return true;
         }
+
+        var handState = MiningToolState.Hand(HandMiningPower);
+        if (!target.CanBeMinedWith(handState))
+            return false;
+
+        toolState = handState;
+        return true;
+    }
+
+    private bool TryResolveSelectedTool(out MiningToolState toolState)
+    {
+        toolState = default;
 
         if (_player.Inventory == null)
             return false;

@@ -545,7 +545,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: StoneOre
+      name: Stone
       rect:
         serializedVersion: 2
         x: 0
@@ -567,7 +567,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FroststoneOre
+      name: Froststone
       rect:
         serializedVersion: 2
         x: 32
@@ -589,7 +589,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SandstoneOre
+      name: Sandstone
       rect:
         serializedVersion: 2
         x: 64
@@ -611,7 +611,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: RiftstoneOre
+      name: Riftstone
       rect:
         serializedVersion: 2
         x: 96
@@ -2004,7 +2004,7 @@ TextureImporter:
       FrostberryJam_0: -1980156823054710826
       FrostberryJam_1: 3997681976197306256
       FrostslimeGel_1: -1064608200324871422
-      FroststoneOre: 2538031814334513553
+      Froststone: 2538031814334513553
       FrozenClockwork_0: 8080519136803558690
       FrozenClockwork_1: -6574601549411353449
       FrozenClockwork_2: 4900300729051918496
@@ -2025,14 +2025,14 @@ TextureImporter:
       MeatStew: 5897031574916963884
       PlantSap: -6600695180056089464
       RiftSeeds: -6226749879353443860
-      RiftstoneOre: -4508949321610508396
+      Riftstone: -4508949321610508396
       SandSlimeGel: -7151503233250691609
       SandslimeGel_1: -5843864290533733529
-      SandstoneOre: -5416770625512055775
+      Sandstone: -5416770625512055775
       SeedStew: -2446209532349003572
       Seeds_0: -1255621167750026000
       Seeds_1: 5975179095532966262
-      StoneOre: 5367753294962327426
+      Stone: 5367753294962327426
       SunbakedFiber: -5870999165499645946
       TrollMeat: -4491978270171731515
       TundraFiber: -1434307129310993265
