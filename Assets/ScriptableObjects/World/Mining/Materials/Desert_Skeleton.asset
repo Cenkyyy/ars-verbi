@@ -15,7 +15,7 @@ MonoBehaviour:
   <RequiredToolType>k__BackingField: 1
   <MinimumTier>k__BackingField: 2
   <AllowHandMining>k__BackingField: 0
-  <MaxDurability>k__BackingField: 2
+  <MaxDurability>k__BackingField: 6
   <ToolPowerMultiplier>k__BackingField: 1
   <ReplenishDurationSeconds>k__BackingField: 4
   _drops:
