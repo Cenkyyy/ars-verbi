@@ -59,6 +59,9 @@ public sealed class PlayerMiningController : MonoBehaviour
         ProcessMiningTicks(target, toolState);
     }
 
+    /// <summary>
+    /// Resolves a reachable target and a tool that is allowed to mine it.
+    /// </summary>
     private bool TryGetMiningContext(out IMineableTarget target, out MiningToolState toolState)
     {
         target = null;
@@ -87,6 +90,9 @@ public sealed class PlayerMiningController : MonoBehaviour
         return false;
     }
 
+    /// <summary>
+    /// Starts a new mining action or continues progress when the target and tool stay the same.
+    /// </summary>
     private void BeginOrContinueMining(IMineableTarget target, MiningToolState toolState)
     {
         bool targetChanged = _currentTarget == null || !_currentTarget.IsSameTarget(target);
@@ -112,6 +118,9 @@ public sealed class PlayerMiningController : MonoBehaviour
         _miningTickAccumulator += Time.deltaTime;
     }
 
+    /// <summary>
+    /// Applies mining damage and tool durability loss at fixed time intervals.
+    /// </summary>
     private void ProcessMiningTicks(IMineableTarget target, MiningToolState toolState)
     {
         while (_miningTickAccumulator >= _miningTickIntervalSeconds)
@@ -171,6 +180,9 @@ public sealed class PlayerMiningController : MonoBehaviour
         return false;
     }
 
+    /// <summary>
+    /// Uses the selected tool when possible and falls back to hand mining when the target allows it.
+    /// </summary>
     private bool TryResolveTool(IMineableTarget target, out MiningToolState toolState)
     {
         toolState = default;

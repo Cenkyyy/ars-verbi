@@ -386,6 +386,9 @@ public class PlayerRuntimeData
         OnXPChanged?.Invoke(CurrentXP, MaxXP, CurrentLevel);
     }
 
+    /// <summary>
+    /// Adds memory experience and handles every level reached by the gained amount.
+    /// </summary>
     public void GainMemoryXP(int amount)
     {
         if (amount <= 0) return;
@@ -405,6 +408,9 @@ public class PlayerRuntimeData
         OnMemoryXPChanged?.Invoke(CurrentMemoryXP, MaxMemoryXP, CurrentMemoryLevel);
     }
 
+    /// <summary>
+    /// Spends memory levels used for word purchases when enough levels are available.
+    /// </summary>
     public bool TrySpendMemoryLevels(int levels)
     {
         if (levels <= 0) return true;
@@ -422,6 +428,9 @@ public class PlayerRuntimeData
 
     // Spawn Point API
 
+    /// <summary>
+    /// Stores the world position used by the next player respawn.
+    /// </summary>
     public void SetSpawnPoint(Vector3 spawnPoint)
     {
         SpawnPoint = spawnPoint;

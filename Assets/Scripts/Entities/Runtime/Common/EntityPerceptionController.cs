@@ -96,6 +96,9 @@ public sealed class EntityPerceptionController : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// Checks that the target is within detection range and that no configured obstacle blocks the view.
+    /// </summary>
     public bool CanSeeTarget(out Vector2 directionToTarget)
     {
         if (_target == null)

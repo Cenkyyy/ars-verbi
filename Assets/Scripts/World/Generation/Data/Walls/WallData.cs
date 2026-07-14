@@ -2,6 +2,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+/// <summary>
+/// Describes one wall type and its possible ore variants.
+/// </summary>
 [CreateAssetMenu(menuName = "World/Walls/Wall Data")]
 public sealed class WallData : ScriptableObject
 {

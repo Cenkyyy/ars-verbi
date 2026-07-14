@@ -109,6 +109,9 @@ public sealed class PlayerRespawnController : MonoBehaviour
             _deathSequenceRoutine = StartCoroutine(RunDeathRespawnSequence());
     }
 
+    /// <summary>
+    /// Runs the death fade, moves the player, restores stats, and waits for nearby world chunks.
+    /// </summary>
     private IEnumerator RunDeathRespawnSequence()
     {
         PanelManager.Instance.CloseCurrentMajorPanel(force: true);
@@ -139,6 +142,9 @@ public sealed class PlayerRespawnController : MonoBehaviour
         AudioManager.Instance.FadeOutMusic(_fadeInDuration + _fadeOutDuration);
     }
 
+    /// <summary>
+    /// Keeps the scene covered until every required generator has loaded the respawn area.
+    /// </summary>
     private IEnumerator WaitForRespawnDecorationsToBeGenerated()
     {
         while (true)

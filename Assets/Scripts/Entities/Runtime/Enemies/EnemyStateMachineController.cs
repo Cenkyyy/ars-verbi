@@ -66,6 +66,9 @@ public sealed class EnemyStateMachineController
         _stateMachine.Register(StateId.Dead, _deadState);
     }
 
+    /// <summary>
+    /// Adds enemy transition rules in priority order, with death checked before every other state change.
+    /// </summary>
     private void ConfigureTransitions()
     {
         _transitionTable.AddAny(StateId.Dead, IsDead);
@@ -102,6 +105,9 @@ public sealed class EnemyStateMachineController
         _transitionTable.Add(StateId.ReturnHome, StateId.Patrol, () => _returnHomeState.ShouldPatrol, forceReset: true);
     }
 
+    /// <summary>
+    /// Chooses the combat state requested after the enemy detects and sees a target.
+    /// </summary>
     private void RefreshRuntimeData()
     {
         if (_stateMachine.CurrentStateId != StateId.Idle && _stateMachine.CurrentStateId != StateId.Patrol && _stateMachine.CurrentStateId != StateId.ReturnHome)

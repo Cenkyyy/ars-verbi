@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
 /// <summary>
-/// Runtime holder for registered FSM states and the transition lifecycle around the active state.
+/// Stores registered states and controls which state is active.
 /// </summary>
 public sealed class StateMachine
 {
@@ -19,6 +19,9 @@ public sealed class StateMachine
         return true;
     }
 
+    /// <summary>
+    /// Changes the active state. A forced reset exits and enters the state again if it is already active.
+    /// </summary>
     public bool Set(StateId stateId, bool forceReset = false)
     {
         return _statesById.TryGetValue(stateId, out var state) &&
@@ -36,7 +39,7 @@ public sealed class StateMachine
     }
 
     /// <summary>
-    /// Evaluates a centralized transition table and switches to the first valid target state.
+    /// Checks the transition rules and changes to the first valid target state.
     /// </summary>
     public bool TryTransition(StateTransitionTable transitionTable)
     {
@@ -45,6 +48,9 @@ public sealed class StateMachine
                Set(nextStateId, forceReset);
     }
 
+    /// <summary>
+    /// Exits the current state, switches the active state and then enters the new one.
+    /// </summary>
     private bool Set(StateId stateId, IState newState, bool forceReset)
     {
         if (newState == null)

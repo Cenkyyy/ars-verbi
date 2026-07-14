@@ -23,6 +23,9 @@ public sealed class TimedStatusEffectsPanel : MonoBehaviour
     private readonly HashSet<ItemStatusEffectType> _visibleStats = new();
     private Coroutine _refreshCoroutine;
 
+    /// <summary>
+    /// Holds the remaining time used to render one timed buff.
+    /// </summary>
     private readonly struct TimedBuffVisualState
     {
         public float RemainingSeconds { get; }

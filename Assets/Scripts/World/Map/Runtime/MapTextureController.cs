@@ -8,6 +8,9 @@ using UnityEngine.Tilemaps;
 [DisallowMultipleComponent]
 public sealed class MapTextureController : MonoBehaviour
 {
+    /// <summary>
+    /// Stores the tile boundaries of one map texture chunk.
+    /// </summary>
     private struct ChunkBounds
     {
         public int MinX;

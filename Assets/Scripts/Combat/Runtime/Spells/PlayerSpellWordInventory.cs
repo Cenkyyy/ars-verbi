@@ -121,6 +121,9 @@ public sealed class PlayerSpellWordInventory : MonoBehaviour
         };
     }
 
+    /// <summary>
+    /// Clears the given list and fills it with all words the player has not unlocked yet.
+    /// </summary>
     public void GetAvailableWords(List<WordData> resultBuffer)
     {
         resultBuffer.Clear();

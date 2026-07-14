@@ -29,6 +29,9 @@ public sealed class PlayerStatusEffectController : MonoBehaviour
         public float ExpiresAt;
     }
 
+    /// <summary>
+    /// Collects all status effect values before they are applied to the player.
+    /// </summary>
     private struct StatAggregation
     {
         public float MaxHealthAdditive;
@@ -77,6 +80,9 @@ public sealed class PlayerStatusEffectController : MonoBehaviour
         TimedStatusEffectsChanged?.Invoke();
     }
 
+    /// <summary>
+    /// Adds the consumable effects as one timed group and recalculates the player stats.
+    /// </summary>
     public void ApplyTimedConsumableStatusEffect(ConsumableItemData consumable)
     {
         if (consumable == null)
@@ -149,6 +155,9 @@ public sealed class PlayerStatusEffectController : MonoBehaviour
         RecalculateAndApply();
     }
 
+    /// <summary>
+    /// Combines equipment and active timed effects before applying the final stat values.
+    /// </summary>
     private void RecalculateAndApply()
     {
         var aggregation = new StatAggregation();

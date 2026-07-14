@@ -140,6 +140,9 @@ public sealed class SceneTransitionController : MonoBehaviour
         TransitionMiddleCompleted?.Invoke(sceneName); 
     }
 
+    /// <summary>
+    /// Loads the target scene additively, makes it active, and then unloads the previous scene.
+    /// </summary>
     private IEnumerator LoadTargetSceneCoroutine(string sceneName, Scene sourceScene)
     {
         AsyncOperation loadOperation = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
@@ -210,6 +213,9 @@ public sealed class SceneTransitionController : MonoBehaviour
         TransitionFinished?.Invoke(sceneName);
     }
 
+    /// <summary>
+    /// Waits until every readiness blocker in the target scene allows the fade overlay to be removed.
+    /// </summary>
     private IEnumerator WaitForSceneRevealReadiness(string targetSceneName)
     {
         // Update the loading text until the active scene is the target scene

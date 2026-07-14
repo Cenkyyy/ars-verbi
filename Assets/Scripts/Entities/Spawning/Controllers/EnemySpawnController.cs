@@ -2,6 +2,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
+/// <summary>
+/// Runs enemy spawn cycles after the generated world is ready.
+/// </summary>
 public class EnemySpawnController : MonoBehaviour
 {
     [Header("References")]
@@ -77,6 +80,9 @@ public class EnemySpawnController : MonoBehaviour
         return _enemySpawner.DespawnEnemiesInsideMinimumSpawnDistance(center);
     }
 
+    /// <summary>
+    /// Builds the spawning service after the generated world data becomes available.
+    /// </summary>
     private bool TryBuildSpawner()
     {
         if (_worldGenerator == null || _worldGenerator.GroundTilemap == null || _worldGenerator.CurrentWorldData == null)

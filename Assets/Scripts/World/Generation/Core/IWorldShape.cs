@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Defines which positions belong to the playable world area.
+/// </summary>
 public interface IWorldShape
 {
     Vector2 Center { get; }

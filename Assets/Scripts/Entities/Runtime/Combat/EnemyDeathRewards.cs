@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 
+/// <summary>
+/// Grants experience and drops loot when an enemy dies.
+/// </summary>
 [DisallowMultipleComponent]
 public sealed class EnemyDeathRewards : MonoBehaviour
 {
@@ -26,6 +29,9 @@ public sealed class EnemyDeathRewards : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Resolves the killer, grants rewards, and schedules the enemy for removal.
+    /// </summary>
     public void HandleEnemyDied(object damageSource)
     {
         if (_wasHandled)

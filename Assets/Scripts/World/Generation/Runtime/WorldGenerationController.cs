@@ -4,6 +4,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
+/// <summary>
+/// Generates the world data, paints its tilemaps, and exposes the runtime world state.
+/// </summary>
 public class WorldGenerationController : MonoBehaviour, ISceneTransitionReadinessBlocker
 {
     private const int DefaultWorldWidth = 2048;
@@ -64,6 +67,9 @@ public class WorldGenerationController : MonoBehaviour, ISceneTransitionReadines
     public bool IsReadyForSceneReveal { get; private set; }
 
     [Serializable]
+    /// <summary>
+    /// Stores the biome influence values used around a generated position.
+    /// </summary>
     private struct RadialBiomeWeights
     {
         [Min(0f)] public float Grassland;
@@ -103,6 +109,9 @@ public class WorldGenerationController : MonoBehaviour, ISceneTransitionReadines
         GenerateAndRender(ResolveSeed());
     }
 
+    /// <summary>
+    /// Stops any previous generation work and starts a new world from the given seed.
+    /// </summary>
     public void GenerateAndRender(int seedUsed)
     {
         if (_generationCoroutine != null)
@@ -145,6 +154,9 @@ public class WorldGenerationController : MonoBehaviour, ISceneTransitionReadines
         _runtimeState.Clear();
     }
 
+    /// <summary>
+    /// Creates the world data near the spawn first, initializes the map, and then reveals the scene.
+    /// </summary>
     private IEnumerator GenerateAndRenderCoroutine(int seedUsed)
     {
         IsReadyForSceneReveal = false;
@@ -186,6 +198,9 @@ public class WorldGenerationController : MonoBehaviour, ISceneTransitionReadines
         EnsureDataGenerated(chunkCoord.x * safeChunkSize, chunkCoord.y * safeChunkSize, safeChunkSize, safeChunkSize);
     }
 
+    /// <summary>
+    /// Generates a clamped data region on demand when a chunk generator needs it.
+    /// </summary>
     public void EnsureDataGenerated(int startX, int startY, int width, int height)
     {
         if (_activeGenerator == null || _runtimeState.Data == null)
@@ -218,6 +233,9 @@ public class WorldGenerationController : MonoBehaviour, ISceneTransitionReadines
             GenerateWorldDataChunk(data, chunks[i]);
     }
 
+    /// <summary>
+    /// Fills the rest of the world from the spawn outward while respecting frame and time budgets.
+    /// </summary>
     private IEnumerator GenerateRemainingWorldDataCoroutine(WorldRuntimeData data)
     {
         yield return null;
@@ -319,6 +337,9 @@ public class WorldGenerationController : MonoBehaviour, ISceneTransitionReadines
         return _defaultSeed;
     }
 
+    /// <summary>
+    /// Creates deterministic biome centers with distance-based spacing and radial biome rules.
+    /// </summary>
     private List<WorldDataGenerator.BiomeCenter> CreateBiomeCenters(int seedUsed, IWorldShape worldShape)
     {
         var rng = new System.Random(seedUsed);
@@ -345,6 +366,9 @@ public class WorldGenerationController : MonoBehaviour, ISceneTransitionReadines
         return centers;
     }
 
+    /// <summary>
+    /// Prefers candidates farther from existing centers to spread biome regions across the world.
+    /// </summary>
     private Vector2 SampleD2Center(System.Random rng, IWorldShape worldShape, List<Vector2> existingCenters, int candidateCount)
     {
         if (existingCenters == null || existingCenters.Count == 0)

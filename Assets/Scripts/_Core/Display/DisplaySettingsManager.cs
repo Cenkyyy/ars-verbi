@@ -155,6 +155,9 @@ public sealed class DisplaySettingsManager : MonoBehaviour
         return visibleVirtualHeight / _assetsPPU * 0.5f;
     }
 
+    /// <summary>
+    /// Chooses a reference resolution and canvas matching mode for the current aspect ratio.
+    /// </summary>
     private void CalculateUiScalePolicy(int screenWidth, int screenHeight, out Vector2 referenceResolution, out float matchWidthOrHeight)
     {
         Vector2 visibleReferenceResolution = CalculateVisibleReferenceResolution(

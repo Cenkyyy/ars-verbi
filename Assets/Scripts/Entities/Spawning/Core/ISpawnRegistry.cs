@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 
+/// <summary>
+/// Tracks spawned entities and provides distance-based queries and cleanup.
+/// </summary>
 public interface ISpawnRegistry<in TEntity> where TEntity : EntityCore
 {
     int AliveCount { get; }

@@ -202,6 +202,9 @@ public sealed class ItemTooltipController : MonoBehaviour
         _panelRoot.gameObject.SetActive(true);
     }
 
+    /// <summary>
+    /// Collects tooltip lines from every provider that supports the hovered item.
+    /// </summary>
     private ItemTooltipRuntimeData BuildRuntimeData(InventorySlotView slot, InventoryItem slotItem)
     {
         RegisterProviders();

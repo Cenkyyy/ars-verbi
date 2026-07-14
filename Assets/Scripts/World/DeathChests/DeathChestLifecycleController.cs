@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Removes a death chest after its inventory becomes empty.
+/// </summary>
 [DisallowMultipleComponent]
 public sealed class DeathChestLifecycleController : MonoBehaviour
 {

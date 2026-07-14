@@ -1,5 +1,11 @@
+/// <summary>
+/// Moves player inventory contents into a death chest.
+/// </summary>
 public static class DeathChestInventoryTransferUtility
 {
+    /// <summary>
+    /// Moves backpack stacks into the death chest while leaving hotbar items with the player.
+    /// </summary>
     public static void MoveBackpackItemsToDeathChest(PlayerInventory playerInventory, IInventory deathChestInventory)
     {
         if (playerInventory == null || deathChestInventory == null)

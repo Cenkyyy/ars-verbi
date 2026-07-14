@@ -118,6 +118,9 @@ public sealed class PanelManager : MonoBehaviour
         OpenMajorPanel(requested);
     }
 
+    /// <summary>
+    /// Closes the current panel group, opens the requested group, and applies its pause rule.
+    /// </summary>
     public void OpenMajorPanel(PanelId id)
     {
         if (SceneLoader.Instance != null && SceneLoader.Instance.IsTransitionActive)
@@ -150,6 +153,9 @@ public sealed class PanelManager : MonoBehaviour
         CloseCurrentMajorPanel(force, resolveHeldItem: true);
     }
 
+    /// <summary>
+    /// Closes the active panel group and optionally returns the cursor-held item to the inventory.
+    /// </summary>
     private void CloseCurrentMajorPanel(bool force, bool resolveHeldItem)
     {
         if (!_currentPanelId.HasValue)
@@ -266,6 +272,9 @@ public sealed class PanelManager : MonoBehaviour
         };
     }
 
+    /// <summary>
+    /// Pauses the game only when the currently open major panel requests it.
+    /// </summary>
     private void ApplyPauseRule()
     {
         if (!_currentPanelId.HasValue)

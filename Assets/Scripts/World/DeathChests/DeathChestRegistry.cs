@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Tracks active death chests by their identifier and inventory.
+/// </summary>
 [DisallowMultipleComponent]
 public sealed class DeathChestRegistry : MonoBehaviour
 {
@@ -9,6 +12,9 @@ public sealed class DeathChestRegistry : MonoBehaviour
 
     public IReadOnlyCollection<DeathChestRuntimeData> ActiveChests => _byId.Values;
 
+    /// <summary>
+    /// Adds a valid death chest to both lookup collections.
+    /// </summary>
     public void Register(DeathChestRuntimeData handle)
     {
         if (handle == null || string.IsNullOrEmpty(handle.DeathChestId) || handle.Inventory == null || handle.Inventory.Inventory == null)
@@ -18,6 +24,9 @@ public sealed class DeathChestRegistry : MonoBehaviour
         _byInventory[handle.Inventory.Inventory] = handle;
     }
 
+    /// <summary>
+    /// Removes a death chest and its inventory lookup.
+    /// </summary>
     public void Unregister(string deathChestId)
     {
         if (string.IsNullOrEmpty(deathChestId))
@@ -32,6 +41,9 @@ public sealed class DeathChestRegistry : MonoBehaviour
             _byInventory.Remove(handle.Inventory.Inventory);
     }
 
+    /// <summary>
+    /// Finds the death chest that owns the given inventory.
+    /// </summary>
     public bool TryGetByInventory(IInventory inventory, out DeathChestRuntimeData handle)
     {
         return _byInventory.TryGetValue(inventory, out handle);

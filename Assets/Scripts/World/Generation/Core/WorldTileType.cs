@@ -1,3 +1,6 @@
+/// <summary>
+/// Identifies the terrain type of a generated world tile.
+/// </summary>
 public enum WorldTileType
 {
     BorderBase = 0,

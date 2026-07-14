@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Stores the configuration and combat values of an enemy type.
+/// </summary>
 [CreateAssetMenu(fileName = "EnemyData", menuName = "Game/Entities/Enemy Data")]
 public class EnemyData : EntityData
 {

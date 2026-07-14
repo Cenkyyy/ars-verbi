@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Provides the shared movement, perception, and navigation behavior of an entity.
+/// </summary>
 [RequireComponent(typeof(Rigidbody2D))]
 public abstract class EntityCore : MonoBehaviour
 {
@@ -56,6 +59,9 @@ public abstract class EntityCore : MonoBehaviour
         return Navigation.CanUsePathPosition(worldPosition, movementCollider);
     }
 
+    /// <summary>
+    /// Requests a path to the target and passes the resulting direction to the entity movement behavior.
+    /// </summary>
     protected void MoveToUsingPath(
         Vector2 worldTarget,
         Collider2D movementCollider,

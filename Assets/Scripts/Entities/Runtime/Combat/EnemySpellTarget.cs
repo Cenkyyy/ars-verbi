@@ -1,9 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Exposes an enemy to spell damage, status effects, and word effectiveness checks.
+/// </summary>
 [DisallowMultipleComponent]
 public sealed class EnemySpellTarget : MonoBehaviour, ICombatTarget, IStatusEffectTarget, ISpellWordEffectivenessTarget
 {
+    /// <summary>
+    /// Stores the strength and expiration time of one active status effect.
+    /// </summary>
     private readonly struct ActiveStatus
     {
         public float ExpiresAt { get; }
@@ -36,6 +42,15 @@ public sealed class EnemySpellTarget : MonoBehaviour, ICombatTarget, IStatusEffe
         }
     }
 
+    private void Awake()
+    {
+        if (_enemyCore == null)
+            _enemyCore = GetComponent<EnemyCore>() ?? GetComponentInParent<EnemyCore>();
+
+        if (_damageable == null)
+            _damageable = GetComponent<EntityDamageable>() ?? GetComponentInParent<EntityDamageable>();
+    }
+
     public bool HasStatus(CombatStatusEffectType effect)
     {
         CleanupExpiredStatuses();
@@ -48,15 +63,9 @@ public sealed class EnemySpellTarget : MonoBehaviour, ICombatTarget, IStatusEffe
         return _activeStatuses.TryGetValue(effect, out ActiveStatus status) ? status.Multiplier : 1f;
     }
 
-    private void Awake()
-    {
-        if (_enemyCore == null)
-            _enemyCore = GetComponent<EnemyCore>() ?? GetComponentInParent<EnemyCore>();
-
-        if (_damageable == null)
-            _damageable = GetComponent<EntityDamageable>() ?? GetComponentInParent<EntityDamageable>();
-    }
-
+    /// <summary>
+    /// Attempts to retrieve the enemy's biome and role tags for spell word effectiveness calculations.
+    /// </summary>
     public bool TryGetSpellWordEffectivenessData(out ItemBiomeAffinity biome, out EnemyRoleTag roleTags)
     {
         if (_enemyCore == null || _enemyCore.Data == null)
@@ -71,6 +80,9 @@ public sealed class EnemySpellTarget : MonoBehaviour, ICombatTarget, IStatusEffe
         return true;
     }
 
+    /// <summary>
+    /// Adds a status or keeps the stronger and longer version when it is already active.
+    /// </summary>
     public void ApplyStatus(CombatStatusEffectType effect, float durationSeconds, float multiplier = 1f)
     {
         if (effect == CombatStatusEffectType.None || durationSeconds <= 0f)

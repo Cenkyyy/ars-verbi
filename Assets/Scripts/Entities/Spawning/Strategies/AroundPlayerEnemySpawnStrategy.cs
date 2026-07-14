@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Samples enemy spawn positions in a ring around the player.
+/// </summary>
 public sealed class AroundPlayerEnemySpawnStrategy : IEnemySpawnStrategy
 {
     public bool TryGetSpawnPoint(Vector2 playerPosition, EnemySpawnSettings settings, out Vector2 spawnPoint)

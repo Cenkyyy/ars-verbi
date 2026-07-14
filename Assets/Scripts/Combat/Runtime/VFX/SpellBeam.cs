@@ -6,6 +6,9 @@ using UnityEngine;
 /// </summary>
 public sealed class SpellBeam : MonoBehaviour
 {
+    /// <summary>
+    /// Identifies a tile's position within the visible beam.
+    /// </summary>
     private enum SegmentType
     {
         Start,
@@ -45,6 +48,9 @@ public sealed class SpellBeam : MonoBehaviour
     private SpellCastRuntimeData _runtimeData;
     private SpellImpactBudget _impactBudget;
 
+    /// <summary>
+    /// Prepares a beam to follow its origin, grow until blocked, and damage targets over time.
+    /// </summary>
     public void Initialize(
         PlayerHeldItemVisualController originProvider,
         Vector2 fallbackOrigin,

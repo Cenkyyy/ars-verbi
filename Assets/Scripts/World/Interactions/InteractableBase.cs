@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Provides shared player detection and input handling for interactable objects.
+/// </summary>
 public abstract class InteractableBase : MonoBehaviour, IInteractable
 {
     [SerializeField] private GameplayInputBindingsData _inputBindings;

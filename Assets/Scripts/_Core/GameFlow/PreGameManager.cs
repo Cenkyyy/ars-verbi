@@ -129,6 +129,9 @@ public class PreGameManager : MonoBehaviour
         _preGameCoroutine = StartCoroutine(RunPreGameStepsCoroutine());
     }
 
+    /// <summary>
+    /// Runs the narrative and starter-word steps before allowing the scene transition to finish.
+    /// </summary>
     private IEnumerator RunPreGameStepsCoroutine()
     {
         if (_narrativeIntroductionController != null && _narrativeIntroductionController.IsEnabled)

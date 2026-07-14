@@ -62,6 +62,9 @@ public sealed class NarrativeIntroductionController : MonoBehaviour
         SetIntroVisible(true);
     }
 
+    /// <summary>
+    /// Reveals one message over time while allowing the player to finish it immediately.
+    /// </summary>
     private IEnumerator TypeMessageCoroutine(string message)
     {
         if (_introMessageText == null)

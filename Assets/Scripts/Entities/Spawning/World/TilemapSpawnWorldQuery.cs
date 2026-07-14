@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.Tilemaps;
 
+/// <summary>
+/// Provides a query interface for determining walkability and biome information in a tilemap-based world.
+/// </summary>
 public sealed class TilemapSpawnWorldQuery : ISpawnWorldQuery
 {
     private readonly Tilemap _groundTilemap;

@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 
+/// <summary>
+/// Updates the map marker that points to the player's latest death chest.
+/// </summary>
 [DisallowMultipleComponent]
 public sealed class DeathMarkerController : MonoBehaviour
 {

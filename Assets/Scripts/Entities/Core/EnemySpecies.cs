@@ -1,4 +1,7 @@
-﻿public enum EnemySpecies
+﻿/// <summary>
+/// Identifies the enemy species available in the world.
+/// </summary>
+public enum EnemySpecies
 {
     // Grassland
     GrasslandTroll = 0,

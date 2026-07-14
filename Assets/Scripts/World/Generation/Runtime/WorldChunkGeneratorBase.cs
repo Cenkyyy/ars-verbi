@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Provides the shared loading, unloading, and readiness flow for chunk generators.
+/// </summary>
 public abstract class WorldChunkGeneratorBase : MonoBehaviour, ISceneTransitionReadinessBlocker
 {
     [Header("Dependencies")]
@@ -48,6 +51,9 @@ public abstract class WorldChunkGeneratorBase : MonoBehaviour, ISceneTransitionR
         IsReadyForSceneReveal = false;
     }
 
+    /// <summary>
+    /// Immediately loads a limited number of missing chunks around a world position.
+    /// </summary>
     public int SpawnMissingChunksAround(Vector3 worldPosition, int radiusInChunks, int maxChunksToSpawn)
     {
         if (!TryGetWorldData(out var data))
@@ -74,6 +80,9 @@ public abstract class WorldChunkGeneratorBase : MonoBehaviour, ISceneTransitionR
         return spawnedCount;
     }
 
+    /// <summary>
+    /// Checks whether every chunk in a radius around a position is loaded.
+    /// </summary>
     public bool AreChunksSpawnedAround(Vector3 worldPosition, int radiusInChunks)
     {
         if (!TryGetWorldData(out _))
@@ -121,6 +130,9 @@ public abstract class WorldChunkGeneratorBase : MonoBehaviour, ISceneTransitionR
         yield break;
     }
 
+    /// <summary>
+    /// Loads the initial area, marks the generator ready, and then streams chunks around the player.
+    /// </summary>
     private IEnumerator StreamChunksCoroutine()
     {
         // get data, do initial fill, set the scene to be ready for reveal
@@ -170,6 +182,9 @@ public abstract class WorldChunkGeneratorBase : MonoBehaviour, ISceneTransitionR
         }
     }
 
+    /// <summary>
+    /// Generates the chunks required before the scene is first revealed.
+    /// </summary>
     private IEnumerator StreamInitialChunksCoroutine(WorldRuntimeData data)
     {
         var focusTile = WorldChunkUtility.ResolveFocusTile(data, worldGenerator.GroundTilemap, playerTransform);
@@ -196,6 +211,9 @@ public abstract class WorldChunkGeneratorBase : MonoBehaviour, ISceneTransitionR
         }
     }
 
+    /// <summary>
+    /// Unloads distant chunks in small batches to avoid a large frame spike.
+    /// </summary>
     private IEnumerator UnloadFarChunksCoroutine(Vector2Int focusChunk)
     {
         if (!EnableChunkUnloading)
@@ -229,6 +247,9 @@ public abstract class WorldChunkGeneratorBase : MonoBehaviour, ISceneTransitionR
         }
     }
 
+    /// <summary>
+    /// Returns world data only after generation is ready for chunk streaming.
+    /// </summary>
     private bool TryGetWorldData(out WorldRuntimeData data)
     {
         data = null;

@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Selects an enemy for a biome using its configured spawn weight.
+/// </summary>
 public sealed class WeightedBiomeEnemySelectionStrategy : IEntitySelectionStrategy<EnemyData>
 {
     private readonly IReadOnlyList<EnemyData> _enemyDataEntries;
@@ -10,6 +13,9 @@ public sealed class WeightedBiomeEnemySelectionStrategy : IEntitySelectionStrate
         _enemyDataEntries = enemyDataEntries;
     }
 
+    /// <summary>
+    /// Randomly selects a valid enemy for the biome using each enemy's spawn weight.
+    /// </summary>
     public bool TrySelect(ItemBiomeAffinity biome, out EnemyData enemyData)
     {
         enemyData = null;

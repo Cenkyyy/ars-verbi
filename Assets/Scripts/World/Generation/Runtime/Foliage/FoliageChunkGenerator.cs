@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [DisallowMultipleComponent]
+/// <summary>
+/// Plans and streams foliage instances for generated world chunks.
+/// </summary>
 public sealed class FoliageChunkGenerator : WorldChunkGeneratorBase
 {
     [Header("Dependencies")]
@@ -91,6 +94,9 @@ public sealed class FoliageChunkGenerator : WorldChunkGeneratorBase
         _instancePool.Clear();
     }
 
+    /// <summary>
+    /// Creates deterministic weighted foliage placements and optional clusters for one chunk.
+    /// </summary>
     private List<FoliagePlacement> GeneratePlacementsForChunk(WorldRuntimeData data, Vector2Int chunkCoord)
     {
         EnsureBiomeIndexBuilt();
@@ -176,6 +182,9 @@ public sealed class FoliageChunkGenerator : WorldChunkGeneratorBase
         return currentPlacementCount >= _maxPlacementsPerChunk;
     }
 
+    /// <summary>
+    /// Adds seeded position jitter and rejects a placement that is too close to another one.
+    /// </summary>
     private FoliagePlacement? TryBuildPlacement(WorldRuntimeData data, FoliageEntryData entry, int tileX, int tileY, Vector2Int chunkCoord, List<FoliagePlacement> existing, System.Random rng)
     {
         float jitterX = ((float)rng.NextDouble() * 2f - 1f) * _tileCenterJitter;
@@ -197,6 +206,9 @@ public sealed class FoliageChunkGenerator : WorldChunkGeneratorBase
         };
     }
 
+    /// <summary>
+    /// Samples a nearby tile for a cluster member and checks its biome, border, and spacing rules.
+    /// </summary>
     private FoliagePlacement? TryBuildClusterPlacement(WorldRuntimeData data, FoliageEntryData entry, FoliagePlacement center, Vector2Int chunkCoord, List<FoliagePlacement> existing, System.Random rng)
     {
         float radius = Mathf.Max(0.25f, entry.ClusterRadiusTiles);
@@ -233,6 +245,9 @@ public sealed class FoliageChunkGenerator : WorldChunkGeneratorBase
         };
     }
 
+    /// <summary>
+    /// Stores the data needed to spawn one planned foliage instance.
+    /// </summary>
     private struct FoliagePlacement
     {
         public FoliageEntryData Entry;
@@ -251,6 +266,9 @@ public sealed class FoliageChunkGenerator : WorldChunkGeneratorBase
         yield return UnloadChunkInstances(chunkCoord, unloadOperationsPerFrame, null);
     }
 
+    /// <summary>
+    /// Spawns the planned foliage through the shared pool and spreads the work across frames.
+    /// </summary>
     private IEnumerator SpawnChunkInstances(WorldRuntimeData data, Vector2Int chunkCoord, int yieldEveryOperations, YieldInstruction yieldInstruction)
     {
         var placements = GeneratePlacementsForChunk(data, chunkCoord);

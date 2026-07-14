@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+/// <summary>
+/// Provides scene objects with access to the current generated world and tilemaps.
+/// </summary>
 public sealed class WorldRuntimeState
 {
     public int Seed { get; private set; }

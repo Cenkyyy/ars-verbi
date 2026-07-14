@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Stores the generated tiles and coordinate conversions of the current world.
+/// </summary>
 public sealed class WorldRuntimeData
 {
     private readonly WorldTile[,] _tiles;

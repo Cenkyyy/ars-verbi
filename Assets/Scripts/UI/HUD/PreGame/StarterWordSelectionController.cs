@@ -75,6 +75,9 @@ public sealed class StarterWordSelectionController : MonoBehaviour
             _formPanel.SelectionChanged -= RefreshContinueInteractable;
     }
 
+    /// <summary>
+    /// Shows the selection screen and waits until the player confirms the required starter words.
+    /// </summary>
     public IEnumerator RunSelectionCoroutine(Sprite backgroundSprite, Color backgroundColor)
     {
         if (!IsEnabled || _starterWordSelectionData == null)

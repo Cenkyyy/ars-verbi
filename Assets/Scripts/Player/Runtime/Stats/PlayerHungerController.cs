@@ -56,6 +56,9 @@ public sealed class PlayerHungerController : MonoBehaviour
         TickStarvationDamage();
     }
 
+    /// <summary>
+    /// Converts travelled distance into hunger loss while keeping the unused fraction for later frames.
+    /// </summary>
     private void TickTravelDrain()
     {
         var currentPosition = (Vector2)transform.position;
@@ -77,6 +80,9 @@ public sealed class PlayerHungerController : MonoBehaviour
         _player.Data.ConsumeHunger(hungerToConsume);
     }
 
+    /// <summary>
+    /// Applies damage at fixed intervals while hunger is empty.
+    /// </summary>
     private void TickStarvationDamage()
     {
         if (_player.Data.CurrentHunger > 0)

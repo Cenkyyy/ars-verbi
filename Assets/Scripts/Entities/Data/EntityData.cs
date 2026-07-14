@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Stores the shared configuration of an entity type.
+/// </summary>
 public class EntityData : ScriptableObject
 {
     [field: Header("Prefab")]

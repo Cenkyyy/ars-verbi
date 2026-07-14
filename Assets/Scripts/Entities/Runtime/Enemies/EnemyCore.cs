@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 
+/// <summary>
+/// Controls the shared runtime behavior and state machine of an enemy.
+/// </summary>
 public class EnemyCore : EntityCore
 {
     [Header("Enemy")]
@@ -178,6 +181,9 @@ public class EnemyCore : EntityCore
         return Random.Range(Data.InvestigationDurationMin, Data.InvestigationDurationMax);
     }
 
+    /// <summary>
+    /// Samples walkable positions inside the enemy home area until a patrol target is found.
+    /// </summary>
     public bool EnsurePatrolTarget()
     {
         if (_hasPatrolTarget)

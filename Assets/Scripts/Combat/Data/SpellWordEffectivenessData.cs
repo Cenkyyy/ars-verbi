@@ -23,6 +23,9 @@ public sealed class SpellWordEffectivenessData : ScriptableObject
     [Header("Enemy Tag -> Form/Modifier Rules")]
     [SerializeField] private List<EnemyRoleWordEffectivenessRule> _enemyRoleRules = new();
 
+    /// <summary>
+    /// Multiplies the matching biome, modifier, and form rules and keeps the result within the allowed range.
+    /// </summary>
     public float CalculateFinalMultiplier(ItemBiomeAffinity biome, EnemyRoleTag roleTags, ModifierWordData modifier, ElementWordData element, FormWordData form)
     {
         var modifierMultiplier = ResolveModifierMultiplier(roleTags, modifier);
@@ -57,6 +60,9 @@ public sealed class SpellWordEffectivenessData : ScriptableObject
         return ResolveRoleTagWordEffectiveness(roleTags, modifier, rule => rule.EffectiveModifiers, rule => rule.IneffectiveModifiers);
     }
 
+    /// <summary>
+    /// Combines all matching role tags. Conflicting effective and ineffective rules cancel each other out.
+    /// </summary>
     private float ResolveRoleTagWordEffectiveness<TWordData>(EnemyRoleTag roleTags, TWordData word, Func<EnemyRoleWordEffectivenessRule, IReadOnlyList<TWordData>> effectiveSelector, Func<EnemyRoleWordEffectivenessRule, IReadOnlyList<TWordData>> ineffectiveSelector)
         where TWordData : WordData
     {

@@ -8,6 +8,9 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public sealed class GameplayBiomeMusicController : MonoBehaviour
 {
+    /// <summary>
+    /// Pairs a world biome with the music played inside it.
+    /// </summary>
     [Serializable]
     private struct BiomeMusicTrack
     {

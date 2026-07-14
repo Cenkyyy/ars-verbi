@@ -36,6 +36,9 @@ public sealed class WorldChunkNavigationController : MonoBehaviour
             Instance = null;
     }
 
+    /// <summary>
+    /// Runs A* against the current terrain, wall, and obstacle state.
+    /// </summary>
     public bool TryBuildPath(
         Vector2 startWorld,
         Vector2 targetWorld,
@@ -58,6 +61,9 @@ public sealed class WorldChunkNavigationController : MonoBehaviour
         );
     }
 
+    /// <summary>
+    /// Samples the line in half-cell steps to check whether an entity can move directly to the target.
+    /// </summary>
     public bool CanMoveDirectly(Vector2 startWorld, Vector2 targetWorld, Vector2 probeCenterOffset, float probeRadius)
     {
         var offset = targetWorld - startWorld;
@@ -79,6 +85,9 @@ public sealed class WorldChunkNavigationController : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// Converts the obstacle collider bounds into blocked navigation cells.
+    /// </summary>
     public void RegisterObstacle(WorldNavigationObstacle obstacle)
     {
         if (obstacle == null)
@@ -122,6 +131,9 @@ public sealed class WorldChunkNavigationController : MonoBehaviour
         RegisterObstacle(obstacle);
     }
 
+    /// <summary>
+    /// Checks the world border and every blocked cell touched by the entity radius.
+    /// </summary>
     public bool IsWorldAreaWalkable(Vector2 worldPoint, float probeRadius)
     {
         if (!IsWorldPointWalkable(worldPoint))
@@ -234,6 +246,9 @@ public sealed class WorldChunkNavigationController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Reference-counts blocked cells so overlapping walls and obstacles can be removed independently.
+    /// </summary>
     private void AddBlockedCells(List<Vector2Int> cells)
     {
         for (var i = 0; i < cells.Count; i++)

@@ -17,6 +17,9 @@ public sealed class WorldItemSpawner : MonoBehaviour
             _worldItemPrefab = null;
     }
 
+    /// <summary>
+    /// Creates a world item and gives it a small scatter impulse.
+    /// </summary>
     public WorldItem Spawn(InventoryItem item, Vector3 worldPos, Vector2? direction = null)
     {
         if (item.IsEmpty || _worldItemPrefab == null)

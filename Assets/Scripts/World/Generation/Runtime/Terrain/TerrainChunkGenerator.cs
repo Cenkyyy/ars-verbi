@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 [DisallowMultipleComponent]
+/// <summary>
+/// Streams generated terrain tiles into and out of the ground tilemap.
+/// </summary>
 public sealed class TerrainChunkGenerator : WorldChunkGeneratorBase
 {
     [Header("Border Ground")]
@@ -99,6 +102,9 @@ public sealed class TerrainChunkGenerator : WorldChunkGeneratorBase
         return data.GetTile(x, y).TileType != WorldTileType.BorderBase;
     }
 
+    /// <summary>
+    /// Builds tile arrays from world data and writes the terrain and border tilemaps in one block.
+    /// </summary>
     private IEnumerator GenerateChunkTiles(WorldRuntimeData data, Vector2Int chunkCoord, int yieldEveryOperations, YieldInstruction yieldInstruction)
     {
         if (_renderedChunks.Contains(chunkCoord) || worldGenerator == null)
@@ -176,6 +182,9 @@ public sealed class TerrainChunkGenerator : WorldChunkGeneratorBase
     }
 
 
+    /// <summary>
+    /// Clears every tilemap layer covered by an unloaded terrain chunk.
+    /// </summary>
     private IEnumerator UnloadChunkTiles(Vector2Int chunkCoord, int yieldEveryOperations, YieldInstruction yieldInstruction)
     {
         if (!_renderedChunks.Contains(chunkCoord) || !_enableChunkUnloading || worldGenerator == null || worldGenerator.CurrentWorldData == null)

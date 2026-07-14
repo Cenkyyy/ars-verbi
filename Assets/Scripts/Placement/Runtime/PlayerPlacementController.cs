@@ -160,6 +160,9 @@ public sealed class PlayerPlacementController : MonoBehaviour
         return canPlaceAtTarget;
     }
 
+    /// <summary>
+    /// Limits the cursor position to placement range, snaps it to the grid, and validates the area.
+    /// </summary>
     private bool TryGetPlacementTarget(Vector2 placementCheckSize, out Vector3 targetPosition, out bool canPlaceAtTarget)
     {
         var mouseWorld = _camera.ScreenToWorldPoint(Input.mousePosition);
@@ -195,6 +198,9 @@ public sealed class PlayerPlacementController : MonoBehaviour
         return PlaceableUtility.IsAreaFree(targetPosition, placementCheckSize, _blockingLayerMask);
     }
 
+    /// <summary>
+    /// Checks the safe inner radius and the closest point of the target tile against the outer radius.
+    /// </summary>
     private bool IsWithinPlacementRange(Vector2 targetPosition)
     {
         var playerPosition = (Vector2)_player.transform.position;
@@ -221,6 +227,9 @@ public sealed class PlayerPlacementController : MonoBehaviour
         return distanceSqrToClosestTilePoint <= maxDistanceSqr;
     }
 
+    /// <summary>
+    /// Places the selected item and removes one unit from its inventory stack.
+    /// </summary>
     private void PlaceAndConsume(IPlaceableItem placeableItem, IPlacementStrategy placementStrategy, Vector3 targetPosition, int slotIndex, InventoryItem slotItem)
     {
         placementStrategy.Place(placeableItem, targetPosition, _placementParent);

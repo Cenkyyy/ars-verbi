@@ -6,6 +6,9 @@ using UnityEngine;
 /// </summary>
 public sealed class SpellProjectile : MonoBehaviour
 {
+    /// <summary>
+    /// Defines how the projectile behaves after hitting a target.
+    /// </summary>
     public enum HitMode
     {
         SingleImpact,
@@ -132,6 +135,9 @@ public sealed class SpellProjectile : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Prepares the projectile movement, collision behavior, and spell data used when it hits a target.
+    /// </summary>
     public void Initialize(
         Vector2 direction,
         float speed,

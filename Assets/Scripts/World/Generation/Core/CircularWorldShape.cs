@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Defines a circular playable area inside the generated world grid.
+/// </summary>
 public sealed class CircularWorldShape : IWorldShape
 {
     private readonly Vector2 _center;

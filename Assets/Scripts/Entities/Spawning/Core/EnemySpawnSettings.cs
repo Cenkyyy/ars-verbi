@@ -1,6 +1,9 @@
 ﻿using System;
 using UnityEngine;
 
+/// <summary>
+/// Contains the timing, limits, and distance rules used for enemy spawning.
+/// </summary>
 [Serializable]
 public sealed class EnemySpawnSettings
 {

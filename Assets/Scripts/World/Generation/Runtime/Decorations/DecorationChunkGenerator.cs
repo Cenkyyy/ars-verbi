@@ -8,6 +8,9 @@ using UnityEditor;
 #endif
 
 [DisallowMultipleComponent]
+/// <summary>
+/// Plans and streams decoration instances for generated world chunks.
+/// </summary>
 public sealed class DecorationChunkGenerator : WorldChunkGeneratorBase
 {
     [Header("Dependencies")]
@@ -111,6 +114,9 @@ public sealed class DecorationChunkGenerator : WorldChunkGeneratorBase
         _instancePool.Clear();
     }
 
+    /// <summary>
+    /// Builds deterministic biome placements while avoiding borders, walls, the spawn area, and nearby objects.
+    /// </summary>
     private List<DecorationPlacement> GeneratePlacementsForChunk(WorldRuntimeData data, Vector2Int chunkCoord)
     {
         EnsureBiomeIndexBuilt();
@@ -196,6 +202,9 @@ public sealed class DecorationChunkGenerator : WorldChunkGeneratorBase
         _isBiomeIndexBuilt = true;
     }
 
+    /// <summary>
+    /// Creates a stable instance ID and accepts the placement only when local and loaded-chunk spacing is valid.
+    /// </summary>
     private DecorationPlacement? TryBuildPlacement(WorldRuntimeData data, DecorationEntryData entry, int tileX, int tileY, Vector2Int chunkCoord, int attemptIndex, List<DecorationPlacement> existing, System.Random rng)
     {
         string instanceId = BuildInstanceId(entry.DecorationId, chunkCoord, attemptIndex, 0);
@@ -298,6 +307,9 @@ public sealed class DecorationChunkGenerator : WorldChunkGeneratorBase
         return false;
     }
 
+    /// <summary>
+    /// Waits for the wall chunk and its needed neighbours before checking decoration clearance.
+    /// </summary>
     private bool CanGenerateChunk(Vector2Int chunkCoord)
     {
         if (_wallChunkGenerator == null)
@@ -381,6 +393,9 @@ public sealed class DecorationChunkGenerator : WorldChunkGeneratorBase
         return $"{decorationId}:{chunkCoord.x}:{chunkCoord.y}:{attemptIndex}:{clusterIndex}";
     }
 
+    /// <summary>
+    /// Stores the data needed to spawn one planned decoration.
+    /// </summary>
     private struct DecorationPlacement
     {
         public DecorationEntryData Entry;
@@ -403,6 +418,9 @@ public sealed class DecorationChunkGenerator : WorldChunkGeneratorBase
         yield return UnloadChunkInstances(chunkCoord, unloadOperationsPerFrame, null);
     }
 
+    /// <summary>
+    /// Replays removed-decoration state, initializes mineable nodes, and registers spawned obstacles.
+    /// </summary>
     private IEnumerator SpawnChunkInstances(WorldRuntimeData data, Vector2Int chunkCoord, int yieldEveryOperations, YieldInstruction yieldInstruction)
     {
         var placements = GeneratePlacementsForChunk(data, chunkCoord);

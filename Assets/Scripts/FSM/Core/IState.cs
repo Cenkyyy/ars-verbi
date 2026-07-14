@@ -1,5 +1,5 @@
 /// <summary>
-/// Defines the lifecycle methods for a state in a finite state machine.
+/// Defines the lifecycle of a state used by the state machine.
 /// </summary>
 public interface IState
 {

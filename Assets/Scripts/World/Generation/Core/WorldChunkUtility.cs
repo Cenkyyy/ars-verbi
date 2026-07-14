@@ -2,8 +2,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+/// <summary>
+/// Provides shared coordinate and range calculations for world chunks.
+/// </summary>
 public static class WorldChunkUtility
 {
+    /// <summary>
+    /// Resolves and clamps the tile used as the center of chunk streaming.
+    /// </summary>
     public static Vector2Int ResolveFocusTile(WorldRuntimeData data, Tilemap groundTilemap, Transform focusTransform)
     {
         if (data == null)
@@ -21,12 +27,18 @@ public static class WorldChunkUtility
         return focusTile;
     }
 
+    /// <summary>
+    /// Converts a tile position into its chunk coordinate.
+    /// </summary>
     public static Vector2Int GetChunkCoordFromTile(Vector2Int tilePos, int chunkSize)
     {
         int safeChunkSize = Mathf.Max(1, chunkSize);
         return new Vector2Int(tilePos.x / safeChunkSize, tilePos.y / safeChunkSize);
     }
 
+    /// <summary>
+    /// Builds a circular chunk set ordered from the center outwards.
+    /// </summary>
     public static List<Vector2Int> BuildChunkSetInRadius(Vector2Int centerChunk, int radius)
     {
         int safeRadius = Mathf.Max(0, radius);

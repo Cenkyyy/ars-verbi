@@ -60,6 +60,9 @@ public sealed class WallTileMineableRuntimeData : IMineableTarget
         return tool.Tier >= WallData.MineableData.MinimumTier;
     }
 
+    /// <summary>
+    /// Applies tool power and reports the wall tile when it becomes depleted.
+    /// </summary>
     public void ApplyMiningDamage(float basePower, Player miner, WorldItemSpawner dropSpawner)
     {
         if (IsDepleted || WallData.MineableData == null)

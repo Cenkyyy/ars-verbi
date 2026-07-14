@@ -1,3 +1,6 @@
+/// <summary>
+/// Represents a start-inclusive and end-exclusive range of inventory slots.
+/// </summary>
 public readonly struct SlotRange
 {
     public int StartInclusive { get; }

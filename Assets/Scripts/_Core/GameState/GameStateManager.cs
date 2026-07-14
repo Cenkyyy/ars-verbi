@@ -61,6 +61,9 @@ public class GameStateManager : MonoBehaviour
         ApplyPauseState();
     }
 
+    /// <summary>
+    /// Keeps the game paused while either a manual request or any pause lock is active.
+    /// </summary>
     private static void ApplyPauseState()
     {
         bool shouldPause = _manualPauseRequested || _pauseLockOwners.Count > 0;

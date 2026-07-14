@@ -1,5 +1,8 @@
 ﻿using System;
 
+/// <summary>
+/// Describes the combat roles an enemy can have.
+/// </summary>
 [Flags]
 public enum EnemyRoleTag
 {

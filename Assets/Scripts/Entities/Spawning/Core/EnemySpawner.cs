@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Coordinates enemy selection, placement, creation, and tracking.
+/// </summary>
 public sealed class EnemySpawner
 {
     private readonly IEntityFactory<EnemyData, EnemyCore> _factory;
@@ -31,6 +34,9 @@ public sealed class EnemySpawner
         _projectileParent = projectileParent;
     }
 
+    /// <summary>
+    /// Uses the remaining enemy capacity to decide how many spawn attempts can run this cycle.
+    /// </summary>
     public void RunSpawnCycle(Vector2 playerPosition, int maxAliveEnemies)
     {
         var effectiveMaxAliveEnemies = Mathf.Max(1, maxAliveEnemies);
@@ -58,6 +64,9 @@ public sealed class EnemySpawner
         return _registry.DespawnInsideRadius(playerPosition, _settings.MinSpawnDistance);
     }
 
+    /// <summary>
+    /// Samples spawn points until one is walkable, spaced from other enemies, and valid for its biome.
+    /// </summary>
     private bool TrySpawnOne(Vector2 playerPosition)
     {
         for (var sample = 0; sample < _settings.MaxSamplesPerAttempt; sample++)

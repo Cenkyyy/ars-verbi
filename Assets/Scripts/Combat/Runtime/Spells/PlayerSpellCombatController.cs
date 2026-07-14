@@ -57,6 +57,9 @@ public sealed class PlayerSpellCombatController : MonoBehaviour
             _castingPanel.OnPhraseCompleted -= HandlePhraseCompleted;
     }
 
+    /// <summary>
+    /// Validates a completed phrase, pays its mana cost, and starts the selected spell form.
+    /// </summary>
     private void HandlePhraseCompleted(SpellPhrase phrase)
     {
         if (!phrase.IsComplete)
@@ -133,6 +136,9 @@ public sealed class PlayerSpellCombatController : MonoBehaviour
         return selectedItem.Item is WeaponItemData weapon ? Mathf.Max(0, weapon.ManaCost) : 0;
     }
 
+    /// <summary>
+    /// Creates the shared data for a cast and runs the behavior of its form word.
+    /// </summary>
     private IEnumerator ExecuteCast(CastState castState)
     {
         SpellCastRuntimeData runtimeData = new(castState.Spell, castState.BaseDamage);
@@ -167,6 +173,9 @@ public sealed class PlayerSpellCombatController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Resolves a collider into a target and applies the hit only if that target was not already handled.
+    /// </summary>
     public bool TryApplyProjectileHit(SpellCastRuntimeData runtimeData, SpellImpactBudget impactBudget, Collider2D collider, ISet<ICombatTarget> alreadyHitTargets)
     {
         if (runtimeData == null || impactBudget == null || collider == null || !IsInLayerMask(collider.gameObject.layer, _targetMask))
@@ -183,6 +192,9 @@ public sealed class PlayerSpellCombatController : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// Calculates the final damage and applies the element and modifier effects of the spell.
+    /// </summary>
     private void ApplyHit(SpellCastRuntimeData runtimeData, SpellImpactBudget impactBudget, ICombatTarget target, Vector2 hitPosition)
     {
         float effectivenessMultiplier = ResolveWordEffectivenessMultiplier(runtimeData, target);
@@ -466,6 +478,9 @@ public sealed class PlayerSpellCombatController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Spawns all beam branches with one shared budget so one-time effects are not repeated for each branch.
+    /// </summary>
     private void SpawnBeams(CastState castState, SpellCastRuntimeData runtimeData)
     {
         SpellPhrase spell = castState.Spell;

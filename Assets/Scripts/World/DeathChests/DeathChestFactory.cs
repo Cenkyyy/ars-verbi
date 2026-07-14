@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 
+/// <summary>
+/// Creates and initializes a death chest in the world.
+/// </summary>
 [DisallowMultipleComponent]
 public sealed class DeathChestFactory : MonoBehaviour
 {
@@ -13,6 +16,9 @@ public sealed class DeathChestFactory : MonoBehaviour
     [SerializeField, Min(0.05f)] private float _placementStepDistance = 0.25f;
     [SerializeField, Min(0)] private int _placementSearchRadius = 3;
 
+    /// <summary>
+    /// Finds a nearby free position and creates the chest, inventory, marker, and registry entry.
+    /// </summary>
     public DeathChestRuntimeData Create(string deathChestId, Vector3 worldPosition)
     {
         if (_deathChestPrefab == null)

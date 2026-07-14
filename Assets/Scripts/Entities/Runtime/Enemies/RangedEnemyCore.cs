@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Extends an enemy with ranged attack behavior and projectile spawning.
+/// </summary>
 public sealed class RangedEnemyCore : EnemyCore
 {
     [Header("Ranged Combat")]
@@ -70,6 +73,9 @@ public sealed class RangedEnemyCore : EnemyCore
         return (Vector2)Target.position + away * desiredDistance;
     }
 
+    /// <summary>
+    /// Samples walkable positions around the target and keeps the one that gives the enemy most distance.
+    /// </summary>
     public Vector2 SampleRangedRepositionTarget()
     {
         var reference = HasTarget ? (Vector2)Target.position : LastKnownTargetPosition;

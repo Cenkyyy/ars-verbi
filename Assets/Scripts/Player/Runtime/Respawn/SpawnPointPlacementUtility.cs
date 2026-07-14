@@ -5,6 +5,9 @@
 /// </summary>
 public static class SpawnPointPlacementUtility
 {
+    /// <summary>
+    /// Searches the surrounding tile rings and returns the nearest position without an obstacle.
+    /// </summary>
     public static Vector3 ResolveNearestFreePosition(Vector3 desiredPosition, LayerMask obstacleMask, float probeRadius, int maxSearchRadius)
     {
         // in case the spawn point does not have an obstacle on it (e.g. death chest, spawn the player to the closest free tile)

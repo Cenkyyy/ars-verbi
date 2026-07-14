@@ -1,9 +1,15 @@
 ﻿using UnityEngine;
 
+/// <summary>
+/// Creates entity instances from their data assets.
+/// </summary>
 public sealed class EntityFactory<TData, TEntity> : IEntityFactory<TData, TEntity>
     where TData : EntityData
     where TEntity : EntityCore
 {
+    /// <summary>
+    /// Instantiates and initializes an entity, or destroys the instance if its expected component is missing.
+    /// </summary>
     public TEntity Create(TData data, Vector2 spawnPoint, Transform parent = null)
     {
         if (data == null || data.Prefab == null)

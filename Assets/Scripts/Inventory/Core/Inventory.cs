@@ -55,6 +55,9 @@ public class Inventory : IInventory
         }
     }
 
+    /// <summary>
+    /// Fills matching stacks first and then uses the first empty slot in the range.
+    /// </summary>
     public bool TryAddItemToRange(InventoryItem item, SlotRange range, out InventoryItem leftoverItem)
     {
         if (!IsValidRange(range))
@@ -116,6 +119,9 @@ public class Inventory : IInventory
         return false;
     }
 
+    /// <summary>
+    /// Removes the requested item amount across all matching stacks in the range.
+    /// </summary>
     public bool TryRemoveFromRange(InventoryItem item, SlotRange range, out InventoryItem removedItem)
     {
         removedItem = InventoryItem.Empty;
@@ -155,6 +161,9 @@ public class Inventory : IInventory
         return false;
     }
 
+    /// <summary>
+    /// Merges an item into one matching stack and returns anything that does not fit.
+    /// </summary>
     public bool TryMergeInto(InventoryItem item, int toIndex, out InventoryItem leftoverItem)
     {
         leftoverItem = item;

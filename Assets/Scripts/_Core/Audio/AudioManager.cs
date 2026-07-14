@@ -79,10 +79,8 @@ public sealed class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Crossfades from the active music source to the serialized standby source. Both sources play during
-    /// the transition because a single AudioSource cannot overlap two clips. The incoming clip begins at
-    /// the supplied normalized position, its volume rises while the outgoing volume falls, and the source
-    /// references swap afterward so the stopped outgoing source can be reused for the next crossfade.
+    /// Plays the incoming track on the standby source while fading out the current source.
+    /// The sources swap roles after the transition so they can be reused for the next crossfade.
     /// </summary>
     public void CrossfadeGameplayMusic(AudioClip clip, float normalizedPlaybackPosition, float fadeDuration, float volumeScale)
     {

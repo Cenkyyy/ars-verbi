@@ -1,11 +1,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Reuses generated world object instances instead of repeatedly creating them.
+/// </summary>
 public sealed class WorldObjectInstancePool
 {
     private readonly Dictionary<GameObject, Stack<GameObject>> _availableByPrefab = new Dictionary<GameObject, Stack<GameObject>>();
     private readonly Dictionary<GameObject, GameObject> _prefabByInstance = new Dictionary<GameObject, GameObject>();
 
+    /// <summary>
+    /// Reuses an inactive instance of the prefab or creates a new one when the pool is empty.
+    /// </summary>
     public GameObject Acquire(GameObject prefab, Vector3 position, Quaternion rotation, Transform parent, out bool wasReused)
     {
         wasReused = false;
@@ -43,6 +49,9 @@ public sealed class WorldObjectInstancePool
         return instance;
     }
 
+    /// <summary>
+    /// Disables a known instance and returns it to the pool of its original prefab.
+    /// </summary>
     public bool Release(GameObject instance, Transform parent)
     {
         if (instance == null)

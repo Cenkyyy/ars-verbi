@@ -19,6 +19,9 @@ public sealed class PlayerCraftingController : MonoBehaviour
         return TryResolveCraftingState(recipe, out _, out _);
     }
 
+    /// <summary>
+    /// Crafts a valid recipe and drops any output that does not fit in the inventory.
+    /// </summary>
     public bool TryCraft(CraftingRecipeData recipe)
     {
         if (!TryResolveCraftingState(recipe, out var inventory, out var output))
@@ -32,6 +35,9 @@ public sealed class PlayerCraftingController : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// Resolves the crafting state by checking if the player has the required ingredients for the recipe.
+    /// </summary>
     private bool TryResolveCraftingState(CraftingRecipeData recipe, out IInventory inventory, out InventoryItem output)
     {
         inventory = null;
@@ -48,6 +54,9 @@ public sealed class PlayerCraftingController : MonoBehaviour
         return CraftingInventoryUtility.HasIngredients(inventory, recipe.Ingredients);
     }
 
+    /// <summary>
+    /// Consumes the required ingredients from the player's inventory based on the crafting recipe.
+    /// </summary>
     private void ConsumeIngredients(IInventory inventory, CraftingRecipeData recipe)
     {
         var range = new SlotRange(0, inventory.Capacity);
@@ -62,6 +71,9 @@ public sealed class PlayerCraftingController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Adds the crafted output to the player's inventory, spawning any overflow items.
+    /// </summary>
     private void AddOutputToInventory(IInventory inventory, InventoryItem output)
     {
         var range = new SlotRange(0, inventory.Capacity);

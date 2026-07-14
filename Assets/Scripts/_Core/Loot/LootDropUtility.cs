@@ -6,6 +6,9 @@ using UnityEngine;
 /// </summary>
 public static class LootDropUtility
 {
+    /// <summary>
+    /// Rolls each drop, adds it to the player inventory, and spawns any leftover amount in the world.
+    /// </summary>
     public static void AddToPlayerInventoryOrSpawnLeftovers(IReadOnlyList<DropEntry> drops, Player player, WorldItemSpawner dropSpawner, Vector3 dropPosition)
     {
         if (drops == null || drops.Count == 0 || player == null)

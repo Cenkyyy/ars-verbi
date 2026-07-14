@@ -1,6 +1,9 @@
 using System;
 using UnityEngine;
 
+/// <summary>
+/// Creates and combines deterministic values used by world generation.
+/// </summary>
 public static class WorldSeedUtility
 {
     public const uint PRIME_FNV1_32 = 16777619u;
@@ -37,8 +40,7 @@ public static class WorldSeedUtility
     }
 
     /// <summary>
-    /// Samples deterministic seed-shifted Perlin noise and remaps it from [0,1] to [-1,1] using * 2f - 1f.
-    /// Useful for neutral push-pull displacement fields in world generation so both biomes can push-pull tiles.
+    /// Samples deterministic Perlin noise and remaps it to a signed value.
     /// </summary>
     public static float SampleSignedPerlinNoise(int x, int y, float scale, int seed)
     {
@@ -49,6 +51,9 @@ public static class WorldSeedUtility
         return Mathf.PerlinNoise(sampleX, sampleY) * 2f - 1f;
     }
 
+    /// <summary>
+    /// Combines a world seed and coordinates into one deterministic hash.
+    /// </summary>
     public static int CombineSeed(int seed, int x, int y)
     {
         unchecked

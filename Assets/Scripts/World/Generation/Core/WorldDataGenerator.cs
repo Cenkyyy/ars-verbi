@@ -6,6 +6,9 @@ using System.Collections.Generic;
 /// </summary>
 public class WorldDataGenerator
 {
+    /// <summary>
+    /// Stores the position and type of a biome seed point.
+    /// </summary>
     public struct BiomeCenter
     {
         public Vector2 Position;
@@ -18,6 +21,9 @@ public class WorldDataGenerator
         }
     }
 
+    /// <summary>
+    /// Contains the values used by the world data generation algorithm.
+    /// </summary>
     public struct Settings
     {
         public int Width;
@@ -47,6 +53,9 @@ public class WorldDataGenerator
         return data;
     }
 
+    /// <summary>
+    /// Generates only the requested region and skips tiles that were already generated.
+    /// </summary>
     public void GenerateInto(WorldRuntimeData data, int startX, int startY, int width, int height)
     {
         if (data == null)
@@ -104,6 +113,9 @@ public class WorldDataGenerator
         }
     }
 
+    /// <summary>
+    /// Finds the closest biome center and the closest center belonging to another biome.
+    /// </summary>
     private void FindNearestCenters(Vector2 position, List<BiomeCenter> centers, out BiomeCenter nearest, out BiomeCenter nearestDifferentBiome, out float nearestDistance, out float nearestDifferentBiomeDistance)
     {
         nearest = centers[0];
@@ -140,6 +152,9 @@ public class WorldDataGenerator
         nearestDifferentBiomeDistance = bestDifferentBiomeDistSq < float.MaxValue ? Mathf.Sqrt(bestDifferentBiomeDistSq) : float.MaxValue;
     }
 
+    /// <summary>
+    /// Warps the Voronoi border with seeded noise to create a less regular biome transition.
+    /// </summary>
     private WorldTileType ChooseVisualTileForBiomeTransition(WorldBiomeType biome, WorldBiomeType neighbouringBiome, float nearestDistance, float neighbouringDistance, int x, int y)
     {
         if (neighbouringBiome == biome)

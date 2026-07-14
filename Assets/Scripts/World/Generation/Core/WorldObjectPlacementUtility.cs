@@ -3,8 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+/// <summary>
+/// Provides shared selection, spacing, and position helpers for generated objects.
+/// </summary>
 public static class WorldObjectPlacementUtility
 {
+    /// <summary>
+    /// Groups valid placement entries by every biome in which they are allowed to spawn.
+    /// </summary>
     public static void BuildBiomeIndex<TEntry>(
         IReadOnlyList<TEntry> allEntries,
         Dictionary<WorldBiomeType, List<TEntry>> entriesByBiome,
@@ -52,6 +58,9 @@ public static class WorldObjectPlacementUtility
         return false;
     }
 
+    /// <summary>
+    /// Selects an entry using its spawn weight, with an even fallback when all weights are zero.
+    /// </summary>
     public static TEntry SelectWeightedEntry<TEntry>(System.Random rng, List<TEntry> entries, Func<TEntry, float> weightSelector)
     {
         float total = 0f;
@@ -74,6 +83,9 @@ public static class WorldObjectPlacementUtility
         return entries[entries.Count - 1];
     }
 
+    /// <summary>
+    /// Checks a candidate against the larger spacing requirement of each placement pair.
+    /// </summary>
     public static bool HasValidSpacing<TPlacement>(
         List<TPlacement> existing,
         Vector3 candidatePosition,

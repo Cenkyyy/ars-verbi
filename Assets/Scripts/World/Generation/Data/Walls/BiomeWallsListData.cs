@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Maps a biome to the wall entries used during generation.
+/// </summary>
 [CreateAssetMenu(menuName = "World/Walls/Biome Walls List Data")]
 public sealed class BiomeWallsListData : ScriptableObject
 {

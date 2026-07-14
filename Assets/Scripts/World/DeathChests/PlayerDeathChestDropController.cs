@@ -1,6 +1,9 @@
 using System;
 using UnityEngine;
 
+/// <summary>
+/// Creates a death chest and transfers the player's items after death.
+/// </summary>
 [DisallowMultipleComponent]
 public sealed class PlayerDeathChestDropController : MonoBehaviour
 {
@@ -8,6 +11,9 @@ public sealed class PlayerDeathChestDropController : MonoBehaviour
     [SerializeField] private DeathChestRegistry _deathChestRegistry;
     [SerializeField] private DeathMarkerController _deathMarkerController;
 
+    /// <summary>
+    /// Creates a death chest only when at least one backpack item can be transferred into it.
+    /// </summary>
     public void CreateDeathChestFromBackpack(Player player, Vector3 deathWorldPosition)
     {
         if (player == null || player.Inventory == null)

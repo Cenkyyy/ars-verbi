@@ -1,6 +1,9 @@
 using System;
 using UnityEngine;
 
+/// <summary>
+/// Pairs an item status effect with its configured value.
+/// </summary>
 [Serializable]
 public struct ItemStatusEffect
 {

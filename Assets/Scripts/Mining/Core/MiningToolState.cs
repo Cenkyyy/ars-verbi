@@ -1,3 +1,6 @@
+/// <summary>
+/// Describes the tool currently used for a mining action.
+/// </summary>
 public readonly struct MiningToolState
 {
     public bool IsHand { get; }

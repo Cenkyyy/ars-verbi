@@ -2,10 +2,16 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Finds grid paths while checking world positions for movement clearance.
+/// </summary>
 public static class GridAStarPathfinder
 {
     private const float BlockedGoalPenalty = 5f;
 
+    /// <summary>
+    /// Stores a cell and its scores while it is waiting to be visited.
+    /// </summary>
     private readonly struct GridNode
     {
         public readonly Vector2Int Cell;
@@ -20,6 +26,9 @@ public static class GridAStarPathfinder
         }
     }
 
+    /// <summary>
+    /// Searches the grid with A* and can return the closest partial path when the goal is unreachable.
+    /// </summary>
     public static bool TryBuildPath(
         Vector2 startWorld,
         Vector2 goalWorld,
@@ -79,6 +88,9 @@ public static class GridAStarPathfinder
         return false;
     }
 
+    /// <summary>
+    /// Selects the lowest-cost open node, using distance to the goal as a tie breaker.
+    /// </summary>
     private static int GetBestOpenNodeIndex(List<GridNode> openList)
     {
         var currentIndex = 0;
@@ -95,6 +107,9 @@ public static class GridAStarPathfinder
         return currentIndex;
     }
 
+    /// <summary>
+    /// Expands the walkable neighbours and updates them when a cheaper route is found.
+    /// </summary>
     private static void VisitNeighbors(
         Vector2Int current,
         Vector2Int goalCell,
@@ -132,6 +147,9 @@ public static class GridAStarPathfinder
         }
     }
 
+    /// <summary>
+    /// Replaces a queued node when a cheaper route to its cell is found.
+    /// </summary>
     private static bool TryUpdateOpenNode(List<GridNode> openList, Vector2Int neighbor, float f, float h)
     {
         for (var i = 0; i < openList.Count; i++)
@@ -146,6 +164,9 @@ public static class GridAStarPathfinder
         return false;
     }
 
+    /// <summary>
+    /// Enumerates adjacent cells while filtering invalid diagonal shortcuts.
+    /// </summary>
     private static IEnumerable<Vector2Int> GetNeighbors(
         Vector2Int cell,
         float nodeStep,
@@ -170,6 +191,9 @@ public static class GridAStarPathfinder
         }
     }
 
+    /// <summary>
+    /// Prevents diagonal movement through a corner when either side of that corner is blocked.
+    /// </summary>
     private static bool IsDiagonalBlocked(
         Vector2Int cell,
         int x,
@@ -198,6 +222,9 @@ public static class GridAStarPathfinder
         return Vector2Int.Distance(a, b);
     }
 
+    /// <summary>
+    /// Checks movement clearance once and caches the result for the current search.
+    /// </summary>
     private static bool IsBlocked(
         Vector2Int cell,
         float nodeStep,
@@ -224,6 +251,9 @@ public static class GridAStarPathfinder
         return new Vector2(cell.x * step, cell.y * step);
     }
 
+    /// <summary>
+    /// Walks the parent map back to the start and removes the starting cell from the final path.
+    /// </summary>
     private static void ReconstructPath(Vector2Int current, Dictionary<Vector2Int, Vector2Int> cameFrom, float nodeStep, List<Vector2> output)
     {
         output.Add(ToWorld(current, nodeStep));

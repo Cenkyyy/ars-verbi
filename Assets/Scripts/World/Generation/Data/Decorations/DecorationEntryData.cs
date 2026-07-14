@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Describes one decoration that can be placed during world generation.
+/// </summary>
 [CreateAssetMenu(menuName = "World/Decorations/Decoration Entry")]
 public sealed class DecorationEntryData : ScriptableObject
 {

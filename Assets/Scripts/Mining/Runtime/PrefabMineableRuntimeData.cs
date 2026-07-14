@@ -76,6 +76,9 @@ public sealed class PrefabMineableRuntimeData : MonoBehaviour, IMineableTarget
         RaiseProgressChanged();
     }
 
+    /// <summary>
+    /// Applies tool power and breaks the node when its durability reaches zero.
+    /// </summary>
     public void ApplyMiningDamage(float basePower, Player miner, WorldItemSpawner dropSpawner)
     {
         NotifyMiningStarted();

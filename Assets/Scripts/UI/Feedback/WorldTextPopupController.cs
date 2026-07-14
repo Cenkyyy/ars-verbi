@@ -74,6 +74,9 @@ public sealed class WorldTextPopupController : MonoBehaviour
         _activePopups.Clear();
     }
 
+    /// <summary>
+    /// Applies cooldown and popup limits before creating a new world text instance.
+    /// </summary>
     private void ShowMessageInternal(string message, Color? colorOverride, float? cooldownOverrideSeconds, Vector3? worldPosition, Transform parent)
     {
         if (string.IsNullOrWhiteSpace(message))

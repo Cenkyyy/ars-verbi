@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Describes one foliage object that can be placed during world generation.
+/// </summary>
 [CreateAssetMenu(menuName = "World/Foliage/Foliage Entry")]
 public sealed class FoliageEntryData : ScriptableObject
 {

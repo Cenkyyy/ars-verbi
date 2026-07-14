@@ -1,6 +1,9 @@
 ﻿using System;
 using UnityEngine;
 
+/// <summary>
+/// Tracks the health and lifetime state of an entity instance.
+/// </summary>
 [Serializable]
 public class EntityRuntimeData
 {
@@ -11,6 +14,9 @@ public class EntityRuntimeData
     public event Action<int, int> OnHealthChanged;
     public event Action OnDied;
 
+    /// <summary>
+    /// Resets the runtime health from the entity configuration.
+    /// </summary>
     public virtual void InitializeFrom(EntityData data)
     {
         if (data == null)
@@ -22,6 +28,9 @@ public class EntityRuntimeData
         OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
     }
 
+    /// <summary>
+    /// Applies damage and raises the death event when health reaches zero.
+    /// </summary>
     public bool TakeDamage(int amount)
     {
         if (amount <= 0 || IsDead)

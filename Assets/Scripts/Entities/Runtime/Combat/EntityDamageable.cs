@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Connects incoming damage with an entity's runtime health and death behavior.
+/// </summary>
 [DisallowMultipleComponent]
 public sealed class EntityDamageable : MonoBehaviour, IDamageable
 {

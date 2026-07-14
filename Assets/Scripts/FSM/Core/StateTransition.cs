@@ -1,5 +1,5 @@
 /// <summary>
-/// Defines a transition between two FSM states and the condition required to use it.
+/// Stores the source, target and condition of one state transition.
 /// </summary>
 public sealed class StateTransition
 {
@@ -26,6 +26,9 @@ public sealed class StateTransition
         ForceReset = forceReset;
     }
 
+    /// <summary>
+    /// Creates a transition that can be used from any current state.
+    /// </summary>
     public static StateTransition FromAnyState(StateId toStateId, StateTransitionCondition condition, bool forceReset)
     {
         return new StateTransition(toStateId, condition, forceReset);

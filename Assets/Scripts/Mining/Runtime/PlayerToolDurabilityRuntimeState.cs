@@ -13,6 +13,9 @@ public sealed class PlayerToolDurabilityRuntimeState : MonoBehaviour
 
     private readonly Dictionary<int, ToolDurabilityState> _durabilityBySlot = new();
 
+    /// <summary>
+    /// Stores the current durability of the tool in one inventory slot.
+    /// </summary>
     private struct ToolDurabilityState
     {
         public ItemData ToolData;
@@ -65,6 +68,9 @@ public sealed class PlayerToolDurabilityRuntimeState : MonoBehaviour
         return false;
     }
 
+    /// <summary>
+    /// Reduces tool durability and removes the inventory item when it breaks.
+    /// </summary>
     public bool TryConsumeDurability(int slotIndex, float amount, out float remaining, out bool broke)
     {
         remaining = 0f;

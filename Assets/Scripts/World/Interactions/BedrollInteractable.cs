@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+/// <summary>
+/// Lets the player use a bedroll to advance the day-night cycle.
+/// </summary>
 [RequireComponent(typeof(CircleCollider2D), typeof(Rigidbody2D), typeof(PrefabMineableRuntimeData))]
 public sealed class BedrollInteractable : InteractableBase
 {

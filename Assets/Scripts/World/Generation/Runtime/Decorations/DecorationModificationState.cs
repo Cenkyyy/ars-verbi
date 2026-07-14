@@ -1,5 +1,8 @@
 using System.Collections.Generic;
 
+/// <summary>
+/// Remembers decorations removed from generated chunks during the current run.
+/// </summary>
 public sealed class DecorationModificationState
 {
     private readonly HashSet<string> _removedDecorationIds = new HashSet<string>();

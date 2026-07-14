@@ -9,6 +9,9 @@ using UnityEditor;
 #endif
 
 [DisallowMultipleComponent]
+/// <summary>
+/// Plans and streams wall and ore tiles for generated world chunks.
+/// </summary>
 public sealed class WallChunkGenerator : WorldChunkGeneratorBase
 {
     private static readonly Vector2Int[] CardinalDirections =
@@ -19,18 +22,27 @@ public sealed class WallChunkGenerator : WorldChunkGeneratorBase
         Vector2Int.left
     };
 
+    /// <summary>
+    /// Stores one wall tile selected during chunk planning.
+    /// </summary>
     private struct PlannedWallTile
     {
         public Vector2Int DataTile;
         public WallData WallData;
     }
 
+    /// <summary>
+    /// Stores one ore tile selected during chunk planning.
+    /// </summary>
     private struct PlannedWallOre
     {
         public DecorationEntryData Entry;
         public Vector2Int AnchorTile;
     }
 
+    /// <summary>
+    /// Groups the planned wall and ore tiles of one chunk.
+    /// </summary>
     private sealed class PlannedChunkContent
     {
         public List<PlannedWallTile> WallTiles = new();
@@ -130,6 +142,9 @@ public sealed class WallChunkGenerator : WorldChunkGeneratorBase
         yield return UnloadChunkTiles(chunkCoord, loadOperationsPerFrame, null);
     }
 
+    /// <summary>
+    /// Converts a world position into the persistent mining state owned by its wall tile.
+    /// </summary>
     public bool TryCreateMiningTarget(Vector3 worldPosition, out IMineableTarget target)
     {
         target = null;
@@ -163,6 +178,9 @@ public sealed class WallChunkGenerator : WorldChunkGeneratorBase
             yield return pair.Key;
     }
 
+    /// <summary>
+    /// Resolves every wall plan needed to answer wall queries for the requested tile range.
+    /// </summary>
     public void EnsureWallPlansForTileRange(WorldRuntimeData data, int minX, int minY, int maxX, int maxY)
     {
         if (data == null || data.Width <= 0 || data.Height <= 0)
@@ -216,6 +234,9 @@ public sealed class WallChunkGenerator : WorldChunkGeneratorBase
         CacheKnownWallPlan(chunkCoord, plan);
     }
 
+    /// <summary>
+    /// Removes a mined wall from the tilemap and saves that removal for later chunk reloads.
+    /// </summary>
     private void HandleRuntimeTileDepleted(WallTileMineableRuntimeData runtimeData, Player miner, WorldItemSpawner dropSpawner)
     {
         if (runtimeData == null)
@@ -237,6 +258,9 @@ public sealed class WallChunkGenerator : WorldChunkGeneratorBase
             LootDropUtility.AddToPlayerInventoryOrSpawnLeftovers(runtimeData.WallData.MineableData.Drops, miner, dropSpawner, GetTileCenterWorld(dataTile));
     }
 
+    /// <summary>
+    /// Applies the deterministic wall plan, skipping tiles removed by mining, and creates runtime targets.
+    /// </summary>
     private IEnumerator GenerateChunkTiles(WorldRuntimeData data, Vector2Int chunkCoord, int yieldEveryOperations, YieldInstruction yieldInstruction)
     {
         if (_wallTilemap == null || _spawnedChunkTiles.ContainsKey(chunkCoord))
@@ -330,6 +354,9 @@ public sealed class WallChunkGenerator : WorldChunkGeneratorBase
         _tileWriteAssetsBuffer.Clear();
     }
 
+    /// <summary>
+    /// Uses the world seed and chunk coordinate to plan repeatable wall clusters and ores.
+    /// </summary>
     private PlannedChunkContent BuildChunkPlan(WorldRuntimeData data, Vector2Int chunkCoord)
     {
         var content = new PlannedChunkContent();
@@ -379,6 +406,9 @@ public sealed class WallChunkGenerator : WorldChunkGeneratorBase
         _resolvedWallPlanChunks.Add(chunkCoord);
     }
 
+    /// <summary>
+    /// Grows one wall cluster from a valid seed using random cardinal expansion and branching.
+    /// </summary>
     private void GrowSingleCluster(
         WorldRuntimeData data,
         System.Random rng,
@@ -522,6 +552,9 @@ public sealed class WallChunkGenerator : WorldChunkGeneratorBase
         }
     }
 
+    /// <summary>
+    /// Places ore prefabs on or beside a cluster and clears any wall planned on the same tile.
+    /// </summary>
     private void TryPlanClusterOres(WorldRuntimeData data, System.Random rng, BiomeWallsListData biomeSettings, WallData wallData, List<Vector2Int> clusterTiles, Dictionary<Vector2Int, PlannedWallTile> plannedTiles, List<PlannedWallOre> plannedOres)
     {
         if (wallData.OreDecorations == null || wallData.OreDecorations.Count == 0)

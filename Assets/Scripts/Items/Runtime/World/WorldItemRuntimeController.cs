@@ -93,6 +93,9 @@ public sealed class WorldItemRuntimeController : MonoBehaviour
         Destroy(gameObject);
     }
 
+    /// <summary>
+    /// Chooses the older compatible stack as the receiver and starts a visual merge.
+    /// </summary>
     private void TryStartVisualMerge(WorldItemRuntimeController other)
     {
         if (_isMerging || other._isMerging)
@@ -113,6 +116,9 @@ public sealed class WorldItemRuntimeController : MonoBehaviour
         incomingController.StartCoroutine(incomingController.AnimateMergeInto(receivingController));
     }
 
+    /// <summary>
+    /// Moves this item into the receiver and returns any amount that exceeds its stack limit.
+    /// </summary>
     private IEnumerator AnimateMergeInto(WorldItemRuntimeController receiver)
     {
         _isMerging = true;
@@ -284,6 +290,9 @@ public sealed class WorldItemRuntimeController : MonoBehaviour
         _pickupPlayerBuffer.Clear();
     }
 
+    /// <summary>
+    /// Adds as much as possible to the inventory and leaves the remaining stack in the world.
+    /// </summary>
     private void TryPickupInto(PlayerInventory inventory)
     {
         if (_isMerging || _isPendingPickupDestroy || _isResolvingPickup || inventory == null || !CanBePickedUp)

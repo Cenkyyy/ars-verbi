@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Stores live spawned entities and removes them based on distance.
+/// </summary>
 public sealed class SpawnedEntityRegistry<TEntity> : ISpawnRegistry<TEntity>
     where TEntity : EntityCore
 {

@@ -124,6 +124,9 @@ public sealed class DayNightSystem : MonoBehaviour
         IsNight = Time01 >= NightStartTime01 || Time01 < DayStartTime01;
     }
 
+    /// <summary>
+    /// Blends the configured day and night curves and reports the new light level.
+    /// </summary>
     private void RecomputeBrightness(bool forceInvoke)
     {
         // Cosine daylight profile centered on noon (0.5).

@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Connects a spawned decoration instance with its generated placement data.
+/// </summary>
 public sealed class DecorationInstanceController : MonoBehaviour
 {
     private string _instanceId;

@@ -1,3 +1,6 @@
+/// <summary>
+/// Stores the generated terrain and biome values of one world tile.
+/// </summary>
 public struct WorldTile
 {
     public WorldBiomeType Biome;

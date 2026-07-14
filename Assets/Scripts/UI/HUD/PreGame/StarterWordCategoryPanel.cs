@@ -8,6 +8,9 @@ using UnityEngine;
 /// </summary>
 public sealed class StarterWordCategoryPanel : MonoBehaviour
 {
+    /// <summary>
+    /// Stores the word and selection rules represented by one option button.
+    /// </summary>
     private struct ButtonOptionData
     {
         public WordData Word;

@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+/// <summary>
+/// Opens the inventory stored inside a nearby death chest.
+/// </summary>
 [RequireComponent(typeof(BoxCollider2D), typeof(Rigidbody2D), typeof(DeathChestInventory))]
 public sealed class DeathChestInteractable : InteractableBase
 {

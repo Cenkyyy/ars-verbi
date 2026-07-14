@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Holds the runtime references and identity of one death chest.
+/// </summary>
 public sealed class DeathChestRuntimeData
 {
     public string DeathChestId { get; }

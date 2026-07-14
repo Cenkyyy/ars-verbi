@@ -44,6 +44,9 @@ public sealed class EntityNavigationController : MonoBehaviour
         return CanUsePathPosition(worldPosition, probeCenterOffset, probeRadius);
     }
 
+    /// <summary>
+    /// Follows a cached path, rebuilds it when needed, and falls back to direct or detour movement.
+    /// </summary>
     public Vector2 MoveTo(
         Vector2 worldTarget,
         Collider2D movementCollider,

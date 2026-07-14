@@ -1,3 +1,6 @@
+/// <summary>
+/// Identifies the biome assigned to a generated world tile.
+/// </summary>
 public enum WorldBiomeType
 {
     None = 0,

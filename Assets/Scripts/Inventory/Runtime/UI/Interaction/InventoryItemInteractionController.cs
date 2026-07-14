@@ -94,10 +94,8 @@ public class InventoryItemInteractionController : MonoBehaviour
     }
 
     /// <summary>
-    /// Handles left/right mouse button clicks.
+    /// Sends left and right clicks to the correct inventory or equipment action.
     /// </summary>
-    /// <param name="slot">The slot that was clicked.</param>
-    /// <param name="eventData">Pointer event data.</param>
     public void OnSlotPointerClicked(InventorySlotView slot, PointerEventData eventData)
     {
         if (GameStateManager.IsGamePaused)
@@ -132,10 +130,8 @@ public class InventoryItemInteractionController : MonoBehaviour
     }
 
     /// <summary>
-    /// Supports right mouse dragging placement.
+    /// Handles placing single items while the right mouse button is dragged across slots.
     /// </summary>
-    /// <param name="slot">The slot the pointer entered.</param>
-    /// <param name="eventData">Pointer event data.</param>
     public void OnSlotPointerEnter(InventorySlotView slot)
     {
         if (GameStateManager.IsGamePaused)
@@ -207,10 +203,8 @@ public class InventoryItemInteractionController : MonoBehaviour
 
     /// <summary>
     /// Processes a left click immediately, then opens a short window to detect a second click.
-    /// Shift+LeftClick triggers quick transfer and skips the double-click window.
+    /// Shift-click skips the double-click window and performs a quick transfer.
     /// </summary>
-    /// <param name="slot">Clicked slot.</param>
-    /// <param name="eventData">Pointer event data for this click.</param>
     private void ProcessLeftClickImmediateThenMaybeDouble(InventorySlotView slot)
     {
         // first click happened, check for second click within the window
@@ -272,9 +266,8 @@ public class InventoryItemInteractionController : MonoBehaviour
     }
 
     /// <summary>
-    /// Small time window for recognizing a double-click.
+    /// Waits for a second click and clears the pending click state when the window ends.
     /// </summary>
-    /// <returns>An enumerator for the coroutine that measures the double-click window.</returns>
     private IEnumerator ClickWindowCoroutine()
     {
         var time = 0f;
@@ -294,10 +287,8 @@ public class InventoryItemInteractionController : MonoBehaviour
     #region Quick-transfer handler and its helpers
 
     /// <summary>
-    /// Shift+LeftClick: moves the clicked stack to the opposite region (from hotbar to backpack or from backpack to hotbar).
-    /// Tries to stack first, then places into the first empty slot. Clears the source if fully moved.
+    /// Moves a stack to equipment, a death chest, or the opposite player inventory region.
     /// </summary>
-    /// <param name="slot">The slot clicked with Shift+LeftClick.</param>
     public void HandleQuickTransferLeftClick(InventorySlotView slot)
     {
         // validation
@@ -334,13 +325,8 @@ public class InventoryItemInteractionController : MonoBehaviour
     #region Regular left click handler and its helpers
 
     /// <summary>
-    /// Left-click behaviour:
-    /// - If not holding anything: pick up the clicked stack.
-    /// - If holding and target slot is empty: place held stack.
-    /// - If holding same target slot is stackable type: merge into target up to max stack.
-    /// - Else: swap held with slot.
+    /// Picks up, places, merges, or swaps a stack depending on the held item and target slot.
     /// </summary>
-    /// <param name="slot">The clicked slot.</param>
     public void HandleRegularLeftClick(InventorySlotView slot)
     {
         // validation
@@ -411,11 +397,8 @@ public class InventoryItemInteractionController : MonoBehaviour
     #region Double left click handler and its helpers
 
     /// <summary>
-    /// After a first click that picked up a stack, handles second click, creating a double-click.
-    /// Double click should top up the held stack by collecting more of the same type from the entire inventory up to the max stack.
+    /// Tops up the held stack with matching items after a second click.
     /// </summary>
-    /// <param name="itemSO">The item type to collect.</param>
-    /// <param name="maxToCollect">Maximum additional units to collect into the held stack.</param>
     private void HandleDoubleLeftClickAfterRegularLeftClick(IInventory inventory, ItemData itemSO, int maxToCollect)
     {
         if (inventory == null || itemSO == null || HeldItem.IsEmpty || HeldItem.Item != itemSO || maxToCollect <= 0)
@@ -429,11 +412,8 @@ public class InventoryItemInteractionController : MonoBehaviour
     }
 
     /// <summary>
-    /// Standard double-click on a slot that has a stackable item.
-    /// Picks up that slot, then finds same type items from the whole inventory
-    /// to fill up to the stack cap into the held item.
+    /// Collects matching stacks from the inventory into one held stack.
     /// </summary>
-    /// <param name="slot">The slot that was double-clicked.</param>
     public void HandleDoubleLeftClick(InventorySlotView slot)
     {
         if (!IsValidSlot(slot) || !TryGetInventoryOwner(slot, out var inventory))
@@ -469,13 +449,8 @@ public class InventoryItemInteractionController : MonoBehaviour
     #region Right click and Right click pointer handlers and its helpers
 
     /// <summary>
-    /// Right-click behaviour:
-    /// - If not holding: pick up half (ceil) of a stack if stackable.
-    /// - If holding and target slot is empty: place one unit into empty.
-    /// - If holding same stackable type as target slot: add one unit into target (respect stack cap).
-    /// - Else: swap.
+    /// Splits a stack when the hand is empty, otherwise places one item or swaps the stacks.
     /// </summary>
-    /// <param name="slot">The slot that was right-clicked.</param>
     public void HandleRegularRightClick(InventorySlotView slot)
     {
         // validation
@@ -513,11 +488,8 @@ public class InventoryItemInteractionController : MonoBehaviour
     }
 
     /// <summary>
-    /// Right-mouse dragging behavior:
-    /// - entered empty slot: place one
-    /// - entered same stackable slot: add one (if under cap)
+    /// Places one held item into each compatible slot entered during a right-button drag.
     /// </summary>
-    /// <param name="slot">The slot the pointer entered while RMB is down.</param>
     public void HandleRightClickPointerEnter(InventorySlotView slot)
     {
         // validation
@@ -585,11 +557,6 @@ public class InventoryItemInteractionController : MonoBehaviour
 
     #region General helpers
 
-    /// <summary>
-    /// Returns true if the slot is non-null and its index is within the player's inventory bounds.
-    /// </summary>
-    /// <param name="slot">The slot to validate.</param>
-    /// <returns>true if the slot is valid for the player's inventory; otherwise false.</returns>
     private bool IsValidSlot(InventorySlotView slot) => slot != null && slot.Owner != null && slot.SlotIndex >= 0 && slot.SlotIndex < slot.Owner.Capacity;
 
     private bool TryGetInventoryOwner(InventorySlotView slot, out IInventory inventory)
@@ -598,12 +565,6 @@ public class InventoryItemInteractionController : MonoBehaviour
         return inventory != null;
     }
 
-    /// <summary>
-    /// Returns true if both items are non-empty and share the same <see cref="ItemData"/> reference.
-    /// </summary>
-    /// <param name="a">First item to compare.</param>
-    /// <param name="b">Second item to compare.</param>
-    /// <returns>true if both are non-empty and of the same type; otherwise false.</returns>
     private bool IsSameItem(InventoryItem a, InventoryItem b) => !a.IsEmpty && !b.IsEmpty && a.Item == b.Item;
 
     public void ResolveHeldItemToInventoryOrDrop()

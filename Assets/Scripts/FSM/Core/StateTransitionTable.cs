@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
 /// <summary>
-/// Stores ordered FSM transition rules and resolves the first valid transition target.
+/// Stores state transition rules in the order in which they should be checked.
 /// </summary>
 public sealed class StateTransitionTable
 {
@@ -17,6 +17,9 @@ public sealed class StateTransitionTable
         _transitions.Add(StateTransition.FromAnyState(toStateId, condition, forceReset));
     }
 
+    /// <summary>
+    /// Finds the first valid transition. Rules added earlier have higher priority.
+    /// </summary>
     public bool TryGetNextState(StateId currentStateId, out StateId nextStateId, out bool forceReset)
     {
         for (var i = 0; i < _transitions.Count; i++)
