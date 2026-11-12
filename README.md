@@ -3,12 +3,14 @@
 </p>
 
 <p align="center">
-  <strong>Recover the Words. Rebuild your magic. Survive a living world.</strong>
+  <strong>Recover the Words. Reclaim your power. Uncover your past.</strong>
 </p>
 
 You were once among the greatest wizards alive - until a forbidden spell tore the Words of magic from your mind. Now you awaken in an unfamiliar world with only fragments of your former power. The missing Words are scattered across the land, buried among precious resources and guarded by dangerous creatures.
 
 Explore, gather, craft, and fight your way through a procedurally generated 2D fantasy world. Every recovered Word expands the spells you can create and brings you one step closer to discovering who erased your past.
+
+[Play in your browser or download the game on itch.io](https://cenkyy.itch.io/ars-verbi).
 
 ## What awaits you
 
@@ -48,7 +50,9 @@ Equip a weapon, then press the displayed number key for each part of the phrase.
 
 ## Project status
 
-The game is being developed as a bachelor’s thesis project. Features, content, and balancing may continue to evolve. If you encounter a problem or have an idea, feel free to [open an issue](https://github.com/Cenkyyy/Bachelor-Thesis/issues).
+The game was developed as a bachelor’s thesis project. Features, content, and balancing may continue to evolve. If you encounter a problem or have an idea, feel free to [open an issue](https://github.com/Cenkyyy/Bachelor-Thesis/issues).
+
+For a much more detailed description of the game, its design, and implementation, read the [full bachelor’s thesis](Docs/thesis.pdf).
 
 ---
 
