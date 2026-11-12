@@ -1,0 +1,88 @@
+CUSTOM SOURCE-AVAILABLE LICENSE
+Version 1.0
+
+Copyright (c) 2026 Oliver Tomáš Cenker. All rights reserved except as
+expressly granted below.
+
+1. Scope
+
+This license applies to the original source code, documentation, and other
+original material in this repository for which Oliver Tomáš Cenker (the
+"Copyright Holder") owns the relevant rights (the "Software"). It does not
+apply to third-party material or material carrying separate license terms.
+
+2. Permitted personal use
+
+The Copyright Holder grants you a worldwide, royalty-free, non-exclusive,
+non-transferable license to view, download, study, privately copy, compile,
+run, and modify the Software solely for your own personal, noncommercial
+use. This includes personal learning, experimentation, and playing the
+game, including privately modified versions.
+
+You must retain this license and all existing copyright, attribution, and
+third-party notices in your copies and modifications of the Software.
+
+3. Restrictions
+
+Unless you obtain the Copyright Holder's prior written permission, you
+must not:
+
+  a. Distribute, publish, share, sublicense, sell, rent, or otherwise make
+     the Software, any part of it, or modified versions available to others,
+     whether as source code, compiled builds, or another form.
+  b. Use the Software or any part of it for commercial purposes, including
+     incorporating it into a commercial product or service, selling access
+     to it, or operating a publicly accessible hosted version of the game.
+  c. Claim authorship or ownership of the original Software, or remove or
+     misrepresent its copyright or attribution notices.
+
+Giving credit does not by itself grant permission to redistribute the
+Software or use it commercially. You may share a link to the Copyright
+Holder's official repository or game page instead of sharing copies.
+
+4. Repository hosting and mandatory rights
+
+This license does not restrict viewing or forking rights expressly granted
+under the applicable hosting platform's terms of service. Those rights do
+not grant additional permission to distribute builds, publish modified
+versions elsewhere, or use the Software commercially.
+
+Nothing in this license limits rights that applicable law grants you
+independently of this license, including mandatory copyright exceptions.
+
+5. Third-party material
+
+Third-party code, libraries, engine components, fonts, artwork, audio, and
+other assets remain subject to their respective licenses and ownership.
+This license neither replaces those terms nor grants rights that the
+Copyright Holder does not own. You must obtain and comply with all required
+third-party licenses, including any applicable Unity terms.
+
+6. Separate permissions
+
+The Copyright Holder may distribute and commercially license the Software,
+and may grant additional permissions under separate written terms. This
+license does not restrict the Copyright Holder's own use of the Software.
+No trademark rights or permission to imply endorsement are granted.
+
+To request redistribution or commercial-use permission, contact the
+Copyright Holder through the official repository:
+https://github.com/Cenkyyy/Bachelor-Thesis
+
+7. Termination
+
+Your permissions under this license terminate automatically if you breach
+its terms. Upon termination, you must stop exercising the permissions
+granted by this license and delete copies held under it, except where
+retention is required by law. Permissions may be reinstated by the
+Copyright Holder in writing.
+
+8. Disclaimer of warranty and limitation of liability
+
+TO THE EXTENT PERMITTED BY APPLICABLE LAW, THE SOFTWARE IS PROVIDED "AS IS",
+WITHOUT WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT.
+THE COPYRIGHT HOLDER SHALL NOT BE LIABLE FOR CLAIMS, DAMAGES, OR OTHER
+LIABILITY ARISING FROM THE SOFTWARE OR ITS USE, WHETHER IN CONTRACT, TORT,
+OR OTHERWISE. NOTHING IN THIS LICENSE EXCLUDES OR LIMITS LIABILITY THAT
+CANNOT LAWFULLY BE EXCLUDED OR LIMITED.
