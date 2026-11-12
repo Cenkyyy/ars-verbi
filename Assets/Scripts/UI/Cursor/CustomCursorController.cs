@@ -6,6 +6,11 @@ using UnityEngine.UI;
 /// </summary>
 public sealed class CustomCursorController : MonoBehaviour
 {
+#if UNITY_WEBGL && !UNITY_EDITOR
+    [System.Runtime.InteropServices.DllImport("__Internal")]
+    private static extern void ArsVerbi_SetCustomCursorActive(int active);
+#endif
+
     public static CustomCursorController Instance { get; private set; }
 
     [Header("Refs")]
@@ -44,6 +49,9 @@ public sealed class CustomCursorController : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = !Application.isFocused;
+#if UNITY_WEBGL && !UNITY_EDITOR
+        ArsVerbi_SetCustomCursorActive(1);
+#endif
 
         if (_fillImage != null)
             _fillImage.raycastTarget = false;
@@ -57,8 +65,13 @@ public sealed class CustomCursorController : MonoBehaviour
 
     private void OnDisable()
     {
-        if (Instance == this)
-            Cursor.visible = true;
+        if (Instance != this)
+            return;
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+        ArsVerbi_SetCustomCursorActive(0);
+#endif
+        Cursor.visible = true;
     }
 
     private void OnDestroy()
