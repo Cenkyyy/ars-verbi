@@ -39,8 +39,11 @@ public sealed class CustomCursorController : MonoBehaviour
 
     private void OnEnable()
     {
-        Cursor.visible = false;
+        if (Instance != this)
+            return;
+
         Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = !Application.isFocused;
 
         if (_fillImage != null)
             _fillImage.raycastTarget = false;
@@ -54,7 +57,8 @@ public sealed class CustomCursorController : MonoBehaviour
 
     private void OnDisable()
     {
-        Cursor.visible = true;
+        if (Instance == this)
+            Cursor.visible = true;
     }
 
     private void OnDestroy()
@@ -65,6 +69,10 @@ public sealed class CustomCursorController : MonoBehaviour
 
     private void Update()
     {
+        if (Instance != this)
+            return;
+
+        Cursor.visible = !Application.isFocused;
         UpdatePosition();
     }
 
