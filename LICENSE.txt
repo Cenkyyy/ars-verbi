@@ -67,7 +67,7 @@ No trademark rights or permission to imply endorsement are granted.
 
 To request redistribution or commercial-use permission, contact the
 Copyright Holder through the official repository:
-https://github.com/Cenkyyy/Bachelor-Thesis
+https://github.com/Cenkyyy/ars-verbi
 
 7. Termination
 

@@ -50,7 +50,7 @@ Equip a weapon, then press the displayed number key for each part of the phrase.
 
 ## Project status
 
-The game was developed as a bachelor’s thesis project. Features, content, and balancing may continue to evolve. If you encounter a problem or have an idea, feel free to [open an issue](https://github.com/Cenkyyy/Bachelor-Thesis/issues).
+The game was developed as a bachelor’s thesis project. Features, content, and balancing may continue to evolve. If you encounter a problem or have an idea, feel free to [open an issue](https://github.com/Cenkyyy/ars-verbi/issues).
 
 For a much more detailed description of the game, its design, and implementation, read the [full bachelor’s thesis](Docs/thesis.pdf).
 
